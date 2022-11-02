@@ -7,4 +7,8 @@ RUN: `py -3 -m venv venv`
 RUN: `.\venv\Scripts\activate`
 RUN: `python.exe -m pip install --upgrade pip`
 RUN: `pip install Flask`
-RUN: `flask --app .\main.py`
+RUN: `flask --app .\src\main.py`
+
+#### Deactivate Environment
+
+RUN: `deactivate`

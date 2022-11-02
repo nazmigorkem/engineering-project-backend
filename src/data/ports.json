@@ -1,0 +1,476 @@
+[
+    [
+        {
+            "name": "IZMIT",
+            "lat": 40.75667,
+            "long": 29.91393,
+            "type": "port"
+        },
+        {
+            "name": "LIMAS",
+            "lat": 40.71439,
+            "long": 29.88537,
+            "type": "port"
+        },
+        {
+            "name": "IZMIT ANCH",
+            "lat": 40.73913,
+            "long": 29.91019,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "GEBZE",
+            "lat": 40.75547,
+            "long": 29.37558,
+            "type": "port"
+        },
+        {
+            "name": "DILISKELESI",
+            "lat": 40.76661,
+            "long": 29.53376,
+            "type": "port"
+        },
+        {
+            "name": "DILISKELESI ANCH",
+            "lat": 40.76377,
+            "long": 29.46842,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "YARIMCA",
+            "lat": 40.76185,
+            "long": 29.7542,
+            "type": "port"
+        },
+        {
+            "name": "KORFEZ ANCH",
+            "lat": 40.76114,
+            "long": 29.67459,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "KORFEZ",
+            "lat": 40.75364,
+            "long": 29.7631,
+            "type": "port"
+        },
+        {
+            "name": "EVYAP",
+            "lat": 40.77216,
+            "long": 29.71175,
+            "type": "port"
+        },
+        {
+            "name": "YARIMCA",
+            "lat": 40.76185,
+            "long": 29.7542,
+            "type": "port"
+        },
+        {
+            "name": "KORFEZ ANCH",
+            "lat": 40.76114,
+            "long": 29.67459,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "HEREKE",
+            "lat": 40.77811,
+            "long": 29.6088,
+            "type": "port"
+        },
+        {
+            "name": "HEREKE ANCH",
+            "lat": 40.76631,
+            "long": 29.6127,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "YALOVA",
+            "lat": 40.71889,
+            "long": 29.47632,
+            "type": "port"
+        },
+        {
+            "name": "YALOVA ANCH",
+            "lat": 40.73854,
+            "long": 29.47417,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "ESKIHISAR",
+            "lat": 40.76672,
+            "long": 29.42272,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "TOPCULAR",
+            "lat": 40.69149,
+            "long": 29.43379,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "YALOVA TOWN",
+            "lat": 40.65939,
+            "long": 29.2605,
+            "type": "port"
+        },
+        {
+            "name": "YALOVA TOWN ANCH",
+            "lat": 40.69392,
+            "long": 29.28577,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "TUZLA",
+            "lat": 40.85192,
+            "long": 29.28831,
+            "type": "port"
+        },
+        {
+            "name": "PENDIK",
+            "lat": 40.86652,
+            "long": 29.24877,
+            "type": "port"
+        },
+        {
+            "name": "KARTAL",
+            "lat": 40.88223,
+            "long": 29.20499,
+            "type": "port"
+        },
+        {
+            "name": "TUZLA ANCH",
+            "lat": 40.83102,
+            "long": 29.22792,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "MALTEPE",
+            "lat": 40.91459,
+            "long": 29.12901,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "KUCUKYALI",
+            "lat": 40.93777,
+            "long": 29.10909,
+            "type": "port"
+        },
+        {
+            "name": "KUCUKYALI ANCH",
+            "lat": 40.927,
+            "long": 29.08283,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "BOSTANCI",
+            "lat": 40.95238,
+            "long": 29.09048,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "HAYDARPASA",
+            "lat": 41.00202,
+            "long": 29.01476,
+            "type": "port"
+        },
+        {
+            "name": "ZEYTINBURNU",
+            "lat": 40.98006,
+            "long": 28.8941,
+            "type": "port"
+        },
+        {
+            "name": "BAKIRKOY",
+            "lat": 40.97219,
+            "long": 28.87717,
+            "type": "port"
+        },
+        {
+            "name": "ISTANBUL ANCH",
+            "lat": 40.96785,
+            "long": 28.93576,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "YESILKOY",
+            "lat": 40.95596,
+            "long": 28.82577,
+            "type": "port"
+        },
+        {
+            "name": "YESILKOY ANCH",
+            "lat": 40.94989,
+            "long": 28.77954,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "AMBARLI",
+            "lat": 40.96675,
+            "long": 28.68947,
+            "type": "port"
+        },
+        {
+            "name": "AMBARLI ANCH",
+            "lat": 40.939,
+            "long": 28.63672,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "SILIVRI",
+            "lat": 41.07352,
+            "long": 28.24022,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "MARMARA EREGLISI",
+            "lat": 40.98512,
+            "long": 27.97462,
+            "type": "port"
+        },
+        {
+            "name": "M EREGLISI ANCH",
+            "lat": 40.99739,
+            "long": 28.02286,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "MARTAS",
+            "lat": 40.96425,
+            "long": 27.9336,
+            "type": "port"
+        },
+        {
+            "name": "MARTAS ANCH",
+            "lat": 40.95343,
+            "long": 27.91317,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "TEKIRDAG",
+            "lat": 40.96661,
+            "long": 27.51646,
+            "type": "port"
+        },
+        {
+            "name": "TEKIRDAG ANCH",
+            "lat": 40.94632,
+            "long": 27.58701,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "ASYAPORT",
+            "lat": 40.90102,
+            "long": 27.46936,
+            "type": "port"
+        },
+        {
+            "name": "ASYAPORT ANCH",
+            "lat": 40.91283,
+            "long": 27.51223,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "KUMBAG",
+            "lat": 40.86545,
+            "long": 27.46132,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "HOSKOY",
+            "lat": 40.70991,
+            "long": 27.31359,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "SARKOY",
+            "lat": 40.60923,
+            "long": 27.1114,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "GELIBOLU",
+            "lat": 40.40636,
+            "long": 26.6623,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "CANAKKALE",
+            "lat": 40.15154,
+            "long": 26.40203,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "LAPSEKI",
+            "lat": 40.35109,
+            "long": 26.68716,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "CARDAK",
+            "lat": 40.37939,
+            "long": 26.71545,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "KEMER",
+            "lat": 40.41199,
+            "long": 27.05267,
+            "type": "port"
+        },
+        {
+            "name": "KEMER ANCH",
+            "lat": 40.41232,
+            "long": 26.99839,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "ICDAS",
+            "lat": 40.45168,
+            "long": 27.1449,
+            "type": "port"
+        },
+        {
+            "name": "ICDAS ANCH",
+            "lat": 40.49748,
+            "long": 27.13511,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "CENAL KARABIGA",
+            "lat": 40.42356,
+            "long": 27.32772,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "KARABIGA",
+            "lat": 40.40206,
+            "long": 27.30866,
+            "type": "port"
+        },
+        {
+            "name": "KARABIGA ANCH",
+            "lat": 40.39507,
+            "long": 27.32969,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "ERDEK",
+            "lat": 40.38894,
+            "long": 27.80017,
+            "type": "port"
+        }
+    ],
+    [
+        {
+            "name": "BANDIRMA",
+            "lat": 40.35658,
+            "long": 27.96376,
+            "type": "port"
+        },
+        {
+            "name": "BANDIRMA WEST",
+            "lat": 40.38247,
+            "long": 27.91102,
+            "type": "port"
+        },
+        {
+            "name": "BANDIRMA ANCH",
+            "lat": 40.38425,
+            "long": 28.00097,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "MUDANYA",
+            "lat": 40.37065,
+            "long": 28.90262,
+            "type": "port"
+        },
+        {
+            "name": "MUDANYA ANCH",
+            "lat": 40.39232,
+            "long": 28.92494,
+            "type": "anchorage"
+        }
+    ],
+    [
+        {
+            "name": "GEMLIK",
+            "lat": 40.4274,
+            "long": 29.11552,
+            "type": "port"
+        },
+        {
+            "name": "GEMLIK ANCH",
+            "lat": 40.44852,
+            "long": 29.07652,
+            "type": "anchorage"
+        }
+    ]
+]

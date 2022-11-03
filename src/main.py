@@ -16,7 +16,8 @@ def get_ships():
         coordinates = data[i]["coordinates"]
         for j in range(len(coordinates) - 1):
             cords = (coordinates[j], coordinates[j+1])
-            vessels.append(vessel.Generator().generate(cords[0], cords[1]))
+            vessels.append(vessel.Generator().generate(
+                cords[0], cords[1], data[i]["density"][j], data[i]["noise"][j]))
 
     return vessels
 

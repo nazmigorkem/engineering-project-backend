@@ -6,9 +6,9 @@ class Generator:
     def __init__(self):
         pass
 
-    def generate(self, coordinates_1: list[float], coordinates_2: list[float], density: float = 0.03, noise: float = 0.05):
+    def generate(self, coordinates_1: list[float], coordinates_2: list[float], density: int = 5, noise: float = 0.05):
         vessels = []
-        for i in range(math.floor(1000 * density)):
+        for i in range(density):
             rand_point = self.get_random_point(
                 coordinates_1[0], coordinates_1[1], coordinates_2[0], coordinates_2[1], noise)
             metadata = {
@@ -26,8 +26,12 @@ class Generator:
         diff_y = (y2 - y1)
         diff_x = (x2 - x1)
 
-        deg = self.calculate_bearing(math.radians(
+        rad = self.calculate_bearing(math.radians(
             diff_x), math.radians(y1), math.radians(y2))
+        deg = math.degrees(rad)
+
+        slope = math.tan(rad)
+        perpendicular_slope = -1 / slope
 
         rand_x = random.uniform(
             0, diff_x) if diff_x >= 0 else random.uniform(diff_x, 0)
@@ -35,14 +39,19 @@ class Generator:
         final_x = x1 + rand_x
         final_y = y1 + (diff_y * ratio)
 
-        noise_rand = random.uniform(0, noise)
-        return [final_x + noise_rand, final_y + noise_rand, deg]
+        # will change
+        hypothenuse = random.uniform(-noise, noise)
+        noised_x = hypothenuse * \
+            math.sin(math.atan(perpendicular_slope)) + final_x
+        noised_y = hypothenuse * \
+            math.cos(math.atan(perpendicular_slope)) + final_y
+        return [noised_x, noised_y,  deg]
 
+    # returns radian
     def calculate_bearing(self, diff_x: float, y1: float, y2: float):
         diff_x = math.radians(diff_x)
-        y1 = math.radians(y1)
-        y2 = math.radians(y2)
+        y1, y2 = math.radians(y1), math.radians(y2)
         x = math.sin(diff_x) * math.cos(y2)
         y = math.cos(y1) * math.sin(y2) - math.sin(y1) * \
             math.cos(y2) * math.cos(diff_x)
-        return math.degrees(math.atan2(x, y))
+        return math.atan2(x, y)

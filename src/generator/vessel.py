@@ -32,6 +32,7 @@ class Generator:
 
         slope = math.tan(rad)
         perpendicular_slope = -1 / slope
+        perpendicular_slope_rad = math.atan(perpendicular_slope)
 
         rand_x = random.uniform(
             0, diff_x) if diff_x >= 0 else random.uniform(diff_x, 0)
@@ -39,12 +40,11 @@ class Generator:
         final_x = x1 + rand_x
         final_y = y1 + (diff_y * ratio)
 
-        # will change
         hypothenuse = random.uniform(-noise, noise)
         noised_x = hypothenuse * \
-            math.sin(math.atan(perpendicular_slope)) + final_x
+            math.sin(perpendicular_slope_rad) + final_x
         noised_y = hypothenuse * \
-            math.cos(math.atan(perpendicular_slope)) + final_y
+            math.cos(perpendicular_slope_rad) + final_y
         return [noised_x, noised_y,  deg]
 
     # returns radian

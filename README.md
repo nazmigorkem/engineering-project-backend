@@ -12,3 +12,8 @@
 #### Deactivate Environment
 
 RUN: `deactivate`
+
+### Run Environment For Mac
+
+-   RUN: `. venv/bin/activate`
+-   RUN: `flask --app ./src/main.py run`

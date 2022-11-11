@@ -3,6 +3,8 @@ import math
 
 
 class Generator:
+    mmsi = 10000000
+
     def __init__(self):
         pass
 
@@ -11,8 +13,9 @@ class Generator:
         for i in range(density):
             rand_point = self.get_random_point(
                 coordinates_1[0], coordinates_1[1], coordinates_2[0], coordinates_2[1], noise)
+            self.mmsi += 1
             metadata = {
-                "mmsi": 10000000 + i,
+                "mmsi": self.mmsi,
                 "course": rand_point[2],
                 "heading": rand_point[2],
                 "speed": random.random() * 200,
@@ -41,10 +44,8 @@ class Generator:
         final_y = y1 + (diff_y * ratio)
 
         hypothenuse = random.uniform(-noise, noise)
-        noised_x = hypothenuse * \
-            math.sin(perpendicular_slope_rad) + final_x
-        noised_y = hypothenuse * \
-            math.cos(perpendicular_slope_rad) + final_y
+        noised_x = hypothenuse * math.sin(perpendicular_slope_rad) + final_x
+        noised_y = hypothenuse * math.cos(perpendicular_slope_rad) + final_y
         return [noised_x, noised_y,  deg]
 
     # returns radian

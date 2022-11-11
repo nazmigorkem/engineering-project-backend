@@ -7,7 +7,8 @@
 -   RUN: `.\venv\Scripts\activate`
 -   RUN: `python.exe -m pip install --upgrade pip`
 -   RUN: `pip install -r ./requirements.txt`
--   RUN: `flask --app .\src\main.py run`
+-   RUN: `cd ./src`
+-   RUN: `uvicorn main:app --reload --port=5000`
 
 #### Deactivate Environment
 
@@ -16,4 +17,5 @@ RUN: `deactivate`
 ### Run Environment For Mac
 
 -   RUN: `. venv/bin/activate`
--   RUN: `flask --app ./src/main.py run`
+-   RUN: `cd ./src`
+-   RUN: `uvicorn main:app --reload --port=5000`

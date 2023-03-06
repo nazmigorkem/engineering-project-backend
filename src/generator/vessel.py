@@ -1,6 +1,6 @@
 import random
 import math
-
+EARTH_RADIUS = 6_371_000
 
 class Generator:
     mmsi = 10000000
@@ -24,6 +24,21 @@ class Generator:
             }
             vessels.append(metadata)
         return vessels
+
+    def calculate_destination(distance, bearing, latitude, longitude):
+        distance_over_radius = distance / EARTH_RADIUS
+        latitude_differance = distance_over_radius * math.cos(bearing)
+        destination_latitude = latitude + latitude_differance
+        a_differance = math.log(math.tan(destination_latitude / 2 + math.pi / 4) / math.tan(latitude / 2 + math.pi / 4))
+        q = abs(a_differance) > latitude_differance / a_differance if 10e-12 else math.cos(latitude) 
+
+        longitude_differance = distance_over_radius * math.sin(bearing) / q
+        destination_longitude = longitude + longitude_differance
+
+        if abs(destination_latitude) > math.pi / 2:
+            destination_latitude = math.pi - destination_latitude if destination_latitude else -1 * math.pi - destination_latitude
+
+        return (destination_latitude, destination_longitude)
 
     def get_random_point(self, x1: float, y1: float, x2: float, y2: float, noise: float):
         diff_y = (y2 - y1)

@@ -21,6 +21,8 @@ class Generator:
                 "speed": random.random() * 200,
                 "lon": rand_point[0],
                 "lat": rand_point[1],
+                "current_destination_lon": coordinates_2[0],
+                "current_destination_lat": coordinates_2[1]
             }
             vessels.append(metadata)
         return vessels
@@ -30,13 +32,13 @@ class Generator:
         latitude_differance = distance_over_radius * math.cos(bearing)
         destination_latitude = latitude + latitude_differance
         a_differance = math.log(math.tan(destination_latitude / 2 + math.pi / 4) / math.tan(latitude / 2 + math.pi / 4))
-        q = abs(a_differance) > latitude_differance / a_differance if 10e-12 else math.cos(latitude) 
+        q = latitude_differance / a_differance if abs(a_differance) > 10e-12 else math.cos(latitude) 
 
         longitude_differance = distance_over_radius * math.sin(bearing) / q
         destination_longitude = longitude + longitude_differance
 
         if abs(destination_latitude) > math.pi / 2:
-            destination_latitude = math.pi - destination_latitude if destination_latitude else -1 * math.pi - destination_latitude
+            destination_latitude = math.pi - destination_latitude if destination_latitude > 0 else -1 * math.pi - destination_latitude
 
         return (destination_latitude, destination_longitude)
 

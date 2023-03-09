@@ -1,21 +1,24 @@
 import random
 import math
+from generator.singleton import Singleton
 EARTH_RADIUS = 6_371_000
 
-class Generator:
-    mmsi = 10000000
+class Vessel(metaclass=Singleton):
 
     def __init__(self):
-        pass
+        self.mmsi = 10000000
+        self.vessels = []
+        print('Vessels are generated')
 
     def generate(self, coordinates_1: list[float], coordinates_2: list[float], density: int = 5, noise: float = 0.05):
-        vessels = []
-        for i in range(density):
-            rand_point = self.get_random_point(
+        
+        for _ in range(density):
+            current_vessels = []
+            rand_point = Vessel.get_random_point(
                 coordinates_1[0], coordinates_1[1], coordinates_2[0], coordinates_2[1], noise)
-            self.mmsi += 1
+            Vessel().mmsi += 1
             metadata = {
-                "mmsi": self.mmsi,
+                "mmsi": Vessel().mmsi,
                 "course": rand_point[2],
                 "heading": rand_point[2],
                 "speed": random.random() * 200,
@@ -24,8 +27,9 @@ class Generator:
                 "current_destination_lon": coordinates_2[0],
                 "current_destination_lat": coordinates_2[1]
             }
-            vessels.append(metadata)
-        return vessels
+            Vessel().vessels.append(metadata)
+            current_vessels.append(metadata)
+        return current_vessels
 
     def calculate_destination(distance, bearing, latitude, longitude):
         distance_over_radius = distance / EARTH_RADIUS
@@ -42,11 +46,11 @@ class Generator:
 
         return (destination_latitude, destination_longitude)
 
-    def get_random_point(self, x1: float, y1: float, x2: float, y2: float, noise: float):
+    def get_random_point(x1: float, y1: float, x2: float, y2: float, noise: float):
         diff_y = (y2 - y1)
         diff_x = (x2 - x1)
 
-        rad = self.calculate_bearing(math.radians(
+        rad = Vessel.calculate_bearing(math.radians(
             diff_x), math.radians(y1), math.radians(y2))
         deg = math.degrees(rad)
 
@@ -66,7 +70,7 @@ class Generator:
         return [noised_x, noised_y,  deg]
 
     # returns radian
-    def calculate_bearing(self, diff_x: float, y1: float, y2: float):
+    def calculate_bearing(diff_x: float, y1: float, y2: float):
         diff_x = math.radians(diff_x)
         y1, y2 = math.radians(y1), math.radians(y2)
         x = math.sin(diff_x) * math.cos(y2)

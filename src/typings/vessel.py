@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class Vessel(BaseModel):
+class VesselType(BaseModel):
     mmsi: int
     course: float
     heading: float

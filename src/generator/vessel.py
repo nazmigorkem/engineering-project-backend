@@ -27,7 +27,6 @@ class Vessel(metaclass=Singleton):
                 "current_destination_lon": coordinates_2[0],
                 "current_destination_lat": coordinates_2[1]
             }
-            Vessel().vessels.append(metadata)
             current_vessels.append(metadata)
         return current_vessels
 

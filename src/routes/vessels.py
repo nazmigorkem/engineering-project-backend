@@ -3,7 +3,7 @@ from lib.util import Util
 from generator.vessel import Vessel
 from fastapi import APIRouter
 from typings.vessel import VesselType
-
+import math
 
 router = APIRouter()
 router.prefix = "/vessels"
@@ -23,10 +23,9 @@ class Vessels:
     @router.get("/generate")
     def generate():
         generator = Vessel()
-        data = None
-        print(len(Vessel().vessels))
         if len(Vessel().vessels) == 0: 
             
+            data = None
             with open('./data/routes.json') as f:
                 data = json.load(f)
             
@@ -48,5 +47,9 @@ class Vessels:
         else:
 
             Util.dump('./data/ship_positions.json', generator.vessels)
-    
+            for x in generator.vessels:
+                for y in x['vessels']:
+                    results = Vessel.calculate_destination(1000, math.radians(y['bearing']), math.radians(y['lat']), math.radians(y['lon']))
+                    y['lat'] = results[0]
+                    y['lon'] = results[1]
             return generator.vessels

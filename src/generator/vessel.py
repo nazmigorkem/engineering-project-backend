@@ -20,6 +20,7 @@ class Vessel(metaclass=Singleton):
             metadata = {
                 "mmsi": Vessel().mmsi,
                 "course": rand_point[2],
+                "bearing": rand_point[2],
                 "heading": rand_point[2],
                 "speed": random.random() * 200,
                 "lon": rand_point[0],
@@ -43,7 +44,7 @@ class Vessel(metaclass=Singleton):
         if abs(destination_latitude) > math.pi / 2:
             destination_latitude = math.pi - destination_latitude if destination_latitude > 0 else -1 * math.pi - destination_latitude
 
-        return (destination_latitude, destination_longitude)
+        return (math.degrees(destination_latitude), math.degrees(destination_longitude))
 
     def get_random_point(x1: float, y1: float, x2: float, y2: float, noise: float):
         diff_y = (y2 - y1)

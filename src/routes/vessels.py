@@ -34,11 +34,11 @@ class Vessels:
                 generator.vessels.append({
                     "from": x["from"],
                     "to": x["to"],
-                    "end_points": [x["coordinates"][0], x["coordinates"][-1]],
+                    "route": coordinates,
                     "vessels": []
                 })
                 for (i, (f, s)) in enumerate(zip(coordinates[:-1], coordinates[1:])):
-                    for y in generator.generate(f, s, x["density"][i], x["noise"][i]):
+                    for y in generator.generate(f, s, i, x["density"][i], x["noise"][i]):
                         generator.vessels[-1]['vessels'].append(y)
 
             Util.dump('./data/ship_positions.json', generator.vessels)
@@ -49,6 +49,23 @@ class Vessels:
             Util.dump('./data/ship_positions.json', generator.vessels)
             for x in generator.vessels:
                 for y in x['vessels']:
+                    current_mmsi = y["mmsi"]
+
+                    index = y['current_route_index']
+                    current_destination = x['route'][index + 1]
+                    distance = Vessel.calculate_distance(math.radians(current_destination[1]), math.radians(current_destination[0]), math.radians(y['lat']), math.radians(y['lon']))
+
+                    if y["last_distance_to_current_mid_point_end"] < distance and len(x['route']) > index + 2:
+                        next_destination = x['route'][index + 2]
+                        slope = Vessel.calculate_bearing(math.radians(next_destination[0] - current_destination[0]), math.radians(current_destination[1]), math.radians(next_destination[1]))
+                        y['course'] = math.degrees(slope)
+                        y['bearing'] = y['course']
+                        current_destination = next_destination
+                        y['current_route_index'] = index + 1
+                        distance = Vessel.calculate_distance(math.radians(current_destination[1]), math.radians(current_destination[0]), math.radians(y['lat']), math.radians(y['lon']))
+                    y["last_distance_to_current_mid_point_end"] = distance
+                    print(f"{current_mmsi}: {distance} ---" + str(y["last_distance_to_current_mid_point_end"]))
+                    
                     results = Vessel.calculate_destination(1000, math.radians(y['bearing']), math.radians(y['lat']), math.radians(y['lon']))
                     y['lat'] = results[0]
                     y['lon'] = results[1]

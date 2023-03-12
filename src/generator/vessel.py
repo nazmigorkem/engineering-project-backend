@@ -10,7 +10,7 @@ class Vessel(metaclass=Singleton):
         self.vessels = []
         print('Vessels are generated')
 
-    def generate(self, coordinates_1: list[float], coordinates_2: list[float], density: int = 5, noise: float = 0.05):
+    def generate(self, coordinates_1: list[float], coordinates_2: list[float], current_route_index, density: int = 5, noise: float = 0.05):
         
         for _ in range(density):
             current_vessels = []
@@ -25,8 +25,8 @@ class Vessel(metaclass=Singleton):
                 "speed": random.random() * 200,
                 "lon": rand_point[0],
                 "lat": rand_point[1],
-                "current_destination_lon": coordinates_2[0],
-                "current_destination_lat": coordinates_2[1]
+                "current_route_index": current_route_index,
+                "last_distance_to_current_mid_point_end": Vessel.calculate_distance(math.radians(coordinates_2[1]), math.radians(coordinates_2[0]), math.radians(rand_point[1]), math.radians(rand_point[0]))
             }
             current_vessels.append(metadata)
         return current_vessels
@@ -45,6 +45,15 @@ class Vessel(metaclass=Singleton):
             destination_latitude = math.pi - destination_latitude if destination_latitude > 0 else -1 * math.pi - destination_latitude
 
         return (math.degrees(destination_latitude), math.degrees(destination_longitude))
+
+    def calculate_distance(latitude_1, longitude_1, latitude_2, longitude_2):
+        latitude_differance = abs(latitude_1 - latitude_2)
+        longitude_differance = abs(longitude_1 - longitude_2)
+
+        a = math.sin(latitude_differance / 2) ** 2 + math.cos(latitude_1) * math.cos(latitude_2) * math.sin(longitude_differance / 2) ** 2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        return EARTH_RADIUS * c
+
 
     def get_random_point(x1: float, y1: float, x2: float, y2: float, noise: float):
         diff_y = (y2 - y1)
@@ -68,6 +77,8 @@ class Vessel(metaclass=Singleton):
         noised_x = hypothenuse * math.sin(perpendicular_slope_rad) + final_x
         noised_y = hypothenuse * math.cos(perpendicular_slope_rad) + final_y
         return [noised_x, noised_y,  deg]
+
+  
 
     # returns radian
     def calculate_bearing(diff_x: float, y1: float, y2: float):

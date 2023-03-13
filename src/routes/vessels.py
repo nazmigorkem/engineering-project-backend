@@ -20,6 +20,14 @@ class Vessels:
 
         return data
 
+    @router.post("/reset")
+    def get():
+        Vessel().vessels = []
+        return {
+            "status": 200
+        }
+
+
     @router.get("/generate")
     def generate():
         generator = Vessel()

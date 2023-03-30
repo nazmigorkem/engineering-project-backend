@@ -8,3 +8,7 @@ class VesselType(BaseModel):
     speed: float
     lon: float
     lat: float
+
+class SelectedVessel(BaseModel):
+    mmsi: int
+    route_id: int

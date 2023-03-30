@@ -2,7 +2,7 @@ import json
 from lib.util import Util
 from generator.vessel import Vessel
 from fastapi import APIRouter
-from typings.vessel import VesselType
+from typings.vessel import VesselType, SelectedVessel
 import math
 
 router = APIRouter()
@@ -27,6 +27,10 @@ class Vessels:
             "status": 200
         }
 
+    @router.post("/select")
+    async def select(vessel: SelectedVessel):
+        print(vessel)
+        return vessel
 
     @router.get("/generate")
     def generate():
@@ -40,6 +44,7 @@ class Vessels:
             for x in data:
                 coordinates = x["coordinates"]
                 generator.vessels.append({
+                    "route_id": x["route_id"],
                     "from": x["from"],
                     "to": x["to"],
                     "route": coordinates,

@@ -1,14 +1,22 @@
 import random
 import math
 from generator.singleton import Singleton
+from lib.util import Util
 EARTH_RADIUS = 6_371_000
 
 class Vessel(metaclass=Singleton):
 
     def __init__(self):
-        self.mmsi = 10000000
+        self.mmsi_starting_number = 10_000_000
+        self.mmsi = self.mmsi_starting_number
         self.vessels = []
+        self.vessels_ordered_by_mmsi = []
+        self.vessels_ordered_by_latitude = []
+        self.selected_vessel = None
         print('Vessels are generated')
+
+    def select_vessel(self, mmsi):
+        self.selected_vessel = self.vessels_ordered_by_mmsi[mmsi - self.mmsi_starting_number]
 
     def generate(self, coordinates_1: list[float], coordinates_2: list[float], current_route_index, density: int = 5, noise: float = 0.05):
         
@@ -16,7 +24,7 @@ class Vessel(metaclass=Singleton):
             current_vessels = []
             rand_point = Vessel.get_random_point(
                 coordinates_1[0], coordinates_1[1], coordinates_2[0], coordinates_2[1], noise)
-            Vessel().mmsi += 1
+       
             metadata = {
                 "mmsi": Vessel().mmsi,
                 "course": rand_point[2],
@@ -29,6 +37,9 @@ class Vessel(metaclass=Singleton):
                 "last_distance_to_current_mid_point_end": Vessel.calculate_distance(math.radians(coordinates_2[1]), math.radians(coordinates_2[0]), math.radians(rand_point[1]), math.radians(rand_point[0]))
             }
             current_vessels.append(metadata)
+            self.vessels_ordered_by_mmsi.append(metadata)
+            Util.insert_sorted(self.vessels_ordered_by_latitude, metadata, "lat")
+            Vessel().mmsi += 1
         return current_vessels
 
     def calculate_destination(distance, bearing, latitude, longitude):

@@ -29,7 +29,7 @@ class Vessels:
 
     @router.post("/select")
     async def select(vessel: SelectedVessel):
-        print(vessel)
+        Vessel().select_vessel(vessel.mmsi)
         return vessel
 
     @router.get("/generate")

@@ -29,8 +29,7 @@ class Vessels:
 
     @router.post("/select")
     async def select(vessel: SelectedVessel):
-        Vessel().select_vessel(vessel.mmsi)
-        return vessel
+        return Vessel().select_vessel(vessel.mmsi)
 
     @router.get("/generate")
     def generate():
@@ -58,7 +57,7 @@ class Vessels:
 
             return generator.vessels
         else:
-
+            Vessel().vessels_ordered_by_latitude = []
             Util.dump('./data/ship_positions.json', generator.vessels)
             for x in generator.vessels:
                 for y in x['vessels']:
@@ -83,4 +82,5 @@ class Vessels:
                     results = Vessel.calculate_destination(1000, math.radians(y['bearing']), math.radians(y['lat']), math.radians(y['lon']))
                     y['lat'] = results[0]
                     y['lon'] = results[1]
+                    Util.insert_sorted(Vessel().vessels_ordered_by_latitude, y, "lat")
             return generator.vessels

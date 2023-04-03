@@ -17,6 +17,13 @@ class Vessel(metaclass=Singleton):
 
     def select_vessel(self, mmsi):
         self.selected_vessel = self.vessels_ordered_by_mmsi[mmsi - self.mmsi_starting_number]
+        closest = Util.binary_search_between(self.vessels_ordered_by_latitude, self.selected_vessel["lat"] - 0.1, self.selected_vessel["lat"] + 0.1, "lat")
+        new_closest = []
+        for x in closest:
+            Util.insert_sorted(new_closest, x, "lon")
+        closest = Util.binary_search_between(new_closest, self.selected_vessel["lon"] - 0.1, self.selected_vessel["lon"] + 0.1, "lon")
+        return closest
+
 
     def generate(self, coordinates_1: list[float], coordinates_2: list[float], current_route_index, density: int = 5, noise: float = 0.05):
         

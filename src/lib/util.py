@@ -22,3 +22,29 @@ class Util:
             else:
                 right = mid - 1
         arr.insert(left, x)
+
+    def binary_search_between(arr, low, high, search_by):
+        left = 0
+        right = len(arr) - 1
+        
+        while left <= right:
+            mid = (left + right) // 2
+            if arr[mid][search_by] < low:
+                left = mid + 1
+            else:
+                right = mid - 1
+        
+        start_index = left
+        
+        left = 0
+        right = len(arr) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            if arr[mid][search_by] > high:
+                right = mid - 1
+            else:
+                left = mid + 1
+        
+        end_index = right
+        
+        return arr[start_index:end_index+1]

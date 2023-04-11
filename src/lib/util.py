@@ -1,5 +1,5 @@
 import json
-
+from lib.calculation import Calculation
 class Util:
 
     def dump(path: str, item):
@@ -23,28 +23,12 @@ class Util:
                 right = mid - 1
         arr.insert(left, x)
 
-    def binary_search_between(arr, low, high, search_by):
-        left = 0
-        right = len(arr) - 1
+    def find_in_range(arr, selected_vessel, range):
+        final_arr = []
+
+        for x in arr:
+            if x["mmsi"] != selected_vessel["mmsi"] and Calculation.calculate_distance(selected_vessel["lat"], selected_vessel["lon"], x["lat"], x["lon"]) < range:
+                final_arr.append(x)
+       
         
-        while left <= right:
-            mid = (left + right) // 2
-            if arr[mid][search_by] < low:
-                left = mid + 1
-            else:
-                right = mid - 1
-        
-        start_index = left
-        
-        left = 0
-        right = len(arr) - 1
-        while left <= right:
-            mid = (left + right) // 2
-            if arr[mid][search_by] > high:
-                right = mid - 1
-            else:
-                left = mid + 1
-        
-        end_index = right
-        
-        return arr[start_index:end_index+1]
+        return final_arr

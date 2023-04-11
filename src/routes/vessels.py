@@ -1,5 +1,6 @@
 import json
 from lib.util import Util
+from lib.calculation import Calculation
 from generator.vessel import Vessel
 from fastapi import APIRouter
 from typings.vessel import VesselType, SelectedVessel
@@ -64,22 +65,22 @@ class Vessels:
 
                     index = y['current_route_index']
                     current_destination = x['route'][index + 1]
-                    distance = Vessel.calculate_distance(math.radians(current_destination[1]), math.radians(current_destination[0]), math.radians(y['lat']), math.radians(y['lon']))
+                    distance = Calculation.calculate_distance(current_destination[1], current_destination[0], y['lat'], y['lon'])
 
                     if y["last_distance_to_current_mid_point_end"] < distance:
                         if len(x['route']) <= index + 2:
                             del y
                             continue
                         next_destination = x['route'][index + 2]
-                        slope = Vessel.calculate_bearing(math.radians(next_destination[0] - current_destination[0]), math.radians(current_destination[1]), math.radians(next_destination[1]))
+                        slope = Calculation.calculate_bearing(math.radians(next_destination[0] - current_destination[0]), math.radians(current_destination[1]), math.radians(next_destination[1]))
                         y['course'] = math.degrees(slope)
                         y['bearing'] = y['course']
                         current_destination = next_destination
                         y['current_route_index'] = index + 1
-                        distance = Vessel.calculate_distance(math.radians(current_destination[1]), math.radians(current_destination[0]), math.radians(y['lat']), math.radians(y['lon']))
+                        distance = Calculation.calculate_distance(current_destination[1], current_destination[0], y['lat'], y['lon'])
                     y["last_distance_to_current_mid_point_end"] = distance
                     
-                    results = Vessel.calculate_destination(1000, math.radians(y['bearing']), math.radians(y['lat']), math.radians(y['lon']))
+                    results = Calculation.calculate_destination(1000, math.radians(y['bearing']), math.radians(y['lat']), math.radians(y['lon']))
                     y['lat'] = results[0]
                     y['lon'] = results[1]
                     Util.insert_sorted(Vessel().vessels_ordered_by_latitude, y, "lat")

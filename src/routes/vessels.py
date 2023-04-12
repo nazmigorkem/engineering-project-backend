@@ -5,6 +5,7 @@ from generator.vessel import Vessel
 from fastapi import APIRouter
 from typings.vessel import VesselType, SelectedVessel
 import math
+from typings.vessel import VesselType
 
 router = APIRouter()
 router.prefix = "/vessels"
@@ -32,9 +33,12 @@ class Vessels:
     async def select(vessel: SelectedVessel):
         return Vessel().select_vessel(vessel.mmsi)
 
-    @router.get("/generate")
-    def generate():
+    @router.post("/generate")
+    def generate(selectedVessel: VesselType = None):
         generator = Vessel()
+        closest = []
+        
+     
         if len(Vessel().vessels) == 0: 
             
             data = None
@@ -58,6 +62,7 @@ class Vessels:
 
             return generator.vessels
         else:
+       
             Vessel().vessels_ordered_by_latitude = []
             Util.dump('./data/ship_positions.json', generator.vessels)
             for x in generator.vessels:
@@ -84,4 +89,6 @@ class Vessels:
                     y['lat'] = results[0]
                     y['lon'] = results[1]
                     Util.insert_sorted(Vessel().vessels_ordered_by_latitude, y, "lat")
-            return generator.vessels
+                    if selectedVessel.mmsi != -1:
+                        closest = Vessel().select_vessel(selectedVessel.mmsi)
+            return {"generatedVessels": generator.vessels, "closestVessels": closest}

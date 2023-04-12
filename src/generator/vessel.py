@@ -16,7 +16,7 @@ class Vessel(metaclass=Singleton):
         self.selected_vessel = None
         print('Vessels are generated')
 
-    def select_vessel(self, mmsi):
+    def select_vessel(self, mmsi: int):
         self.selected_vessel = self.vessels_ordered_by_mmsi[mmsi - self.mmsi_starting_number]
         closest = Util.find_in_range(self.vessels_ordered_by_latitude, self.selected_vessel, 10 ** 4)
    

@@ -2,7 +2,6 @@
     "vesselTypes": [
       {
         "name": "Container Ship",
-        "description": "A large ship designed to carry cargo in shipping containers.",
         "length": {
           "value": 400,
           "unit": "meters"
@@ -12,25 +11,16 @@
           "unit": "meters per hour"
         },
         "aisRange": {
-          "value": 129040,
+          "value": 12904,
           "unit": "meters"
         },
         "aisBroadcastInterval": {
           "value": 10,
           "unit": "seconds"
-        },
-        "maxWeight": {
-          "value": 235.99,
-          "unit": "gross tons"
-        },
-        "minWeight": {
-          "value": 16.53,
-          "unit": "gross tons"
         }
       },
       {
         "name": "Bulk Carrier",
-        "description": "A ship designed to transport bulk cargo such as coal, grain, and ore.",
         "length": {
           "value": 300,
           "unit": "meters"
@@ -40,25 +30,16 @@
           "unit": "meters per hour"
         },
         "aisRange": {
-          "value": 111120,
+          "value": 11112,
           "unit": "meters"
         },
         "aisBroadcastInterval": {
           "value": 15,
           "unit": "seconds"
-        },
-        "maxWeight": {
-          "value": 201.85,
-          "unit": "gross tons"
-        },
-        "minWeight": {
-          "value": 11.20,
-          "unit": "gross tons"
         }
       },
       {
         "name": "Oil Tanker",
-        "description": "A ship designed to transport large amounts of crude oil or refined petroleum products.",
         "length": {
           "value": 400,
           "unit": "meters"
@@ -68,25 +49,16 @@
           "unit": "meters per hour"
         },
         "aisRange": {
-          "value": 148160,
+          "value": 14816,
           "unit": "meters"
         },
         "aisBroadcastInterval": {
           "value": 20,
           "unit": "seconds"
-        },
-        "maxWeight": {
-          "value": 335.10,
-          "unit": "gross tons"
-        },
-        "minWeight": {
-          "value": 22.34,
-          "unit": "gross tons"
         }
       },
       {
         "name": "Ro-Ro Ship",
-        "description": "A ship designed to carry wheeled cargo such as cars, trucks, and trailers.",
         "length": {
           "value": 200,
           "unit": "meters"
@@ -96,20 +68,12 @@
           "unit": "meters per hour"
         },
         "aisRange": {
-          "value": 92600,
+          "value": 9260,
           "unit": "meters"
         },
         "aisBroadcastInterval": {
           "value": 30,
           "unit": "seconds"
-        },
-        "maxWeight": {
-          "value": 43.92,
-          "unit": "gross tons"
-        },
-        "minWeight": {
-          "value": 2.79,
-          "unit": "gross tons"
         }
       }
     ]

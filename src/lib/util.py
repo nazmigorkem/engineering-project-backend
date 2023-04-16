@@ -23,11 +23,11 @@ class Util:
                 right = mid - 1
         arr.insert(left, x)
 
-    def find_in_range(arr, selected_vessel, range):
+    def find_in_range(arr, selected_vessel):
         final_arr = []
 
         for x in arr:
-            if x["mmsi"] != selected_vessel["mmsi"] and Calculation.calculate_distance(selected_vessel["lat"], selected_vessel["lon"], x["lat"], x["lon"]) < range:
+            if x["mmsi"] != selected_vessel["mmsi"] and Calculation.calculate_distance(selected_vessel["lat"], selected_vessel["lon"], x["lat"], x["lon"]) < x["aisRange"]:
                 final_arr.append(x)
        
         

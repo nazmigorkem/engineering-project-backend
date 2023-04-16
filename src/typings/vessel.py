@@ -5,7 +5,8 @@ class VesselType(BaseModel):
     mmsi: int
     course: float
     heading: float
-    speed: float
+    distance_per_tick: float
+    aisRange: int
     lon: float
     lat: float
 

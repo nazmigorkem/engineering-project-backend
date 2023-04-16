@@ -24,11 +24,11 @@ class Vessel(metaclass=Singleton):
 
 
     def generate(self, coordinates_1: list[float], coordinates_2: list[float], current_route_index, density: int = 5, noise: float = 0.05):
+        current_vessels = []
         for _ in range(density):
-            current_vessels = []
             rand_point = Calculation.get_random_point(
                 coordinates_1[0], coordinates_1[1], coordinates_2[0], coordinates_2[1], noise)
-       
+
             metadata = {
                 "mmsi": Vessel().mmsi,
                 "course": rand_point[2],

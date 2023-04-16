@@ -5,6 +5,7 @@ EARTH_RADIUS = 6_371_000
 
 
 class Calculation:
+    @staticmethod
     def calculate_destination(distance, bearing, latitude, longitude):
         distance_over_radius = distance / EARTH_RADIUS
         latitude_differance = distance_over_radius * math.cos(bearing)
@@ -19,6 +20,7 @@ class Calculation:
             destination_latitude = math.pi - destination_latitude if destination_latitude > 0 else -1 * math.pi - destination_latitude
         return (math.degrees(destination_latitude), math.degrees(destination_longitude))
 
+    @staticmethod
     def calculate_distance(latitude_1, longitude_1, latitude_2, longitude_2):
         latitude_1 = math.radians(latitude_1)
         latitude_2 = math.radians(latitude_2)
@@ -31,7 +33,7 @@ class Calculation:
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
         return EARTH_RADIUS * c
 
-
+    @staticmethod
     def get_random_point(x1: float, y1: float, x2: float, y2: float, noise: float):
         diff_y = (y2 - y1)
         diff_x = (x2 - x1)
@@ -58,6 +60,7 @@ class Calculation:
 
 
     # returns radian
+    @staticmethod
     def calculate_bearing(diff_x: float, y1: float, y2: float):
         diff_x = math.radians(diff_x)
         y1, y2 = math.radians(y1), math.radians(y2)

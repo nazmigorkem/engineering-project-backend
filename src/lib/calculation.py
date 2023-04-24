@@ -18,7 +18,7 @@ class Calculation:
 
         if abs(destination_latitude) > math.pi / 2:
             destination_latitude = math.pi - destination_latitude if destination_latitude > 0 else -1 * math.pi - destination_latitude
-        return (math.degrees(destination_latitude), math.degrees(destination_longitude))
+        return math.degrees(destination_latitude), math.degrees(destination_longitude)
 
     @staticmethod
     def calculate_distance(latitude_1, longitude_1, latitude_2, longitude_2):
@@ -52,12 +52,10 @@ class Calculation:
         final_x = x1 + rand_x
         final_y = y1 + (diff_y * ratio)
 
-        hypothenuse = random.uniform(-noise, noise)
-        noised_x = hypothenuse * math.sin(perpendicular_slope_rad) + final_x
-        noised_y = hypothenuse * math.cos(perpendicular_slope_rad) + final_y
+        hypotenuse = random.uniform(-noise, noise)
+        noised_x = hypotenuse * math.sin(perpendicular_slope_rad) + final_x
+        noised_y = hypotenuse * math.cos(perpendicular_slope_rad) + final_y
         return [noised_x, noised_y,  deg]
-
-
 
     # returns radian
     @staticmethod

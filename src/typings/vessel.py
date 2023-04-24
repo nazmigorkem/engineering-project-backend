@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class VesselType(BaseModel):
     mmsi: int
     course: float
@@ -10,6 +9,9 @@ class VesselType(BaseModel):
     lon: float
     lat: float
 
+
 class SelectedVessel(BaseModel):
     mmsi: int
     route_id: int
+
+

@@ -5,7 +5,7 @@ class VesselType(BaseModel):
     course: float
     heading: float
     distance_per_tick: float
-    aisRange: int
+    ais_range: int
     lon: float
     lat: float
 

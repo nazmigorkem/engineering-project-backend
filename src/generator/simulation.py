@@ -1,9 +1,12 @@
+import json
 import math
 import random
+
+from lib.calculation import Calculation
 from lib.singleton import Singleton
 from lib.util import Util
-from lib.calculation import Calculation
-import json
+from models.Route import Route
+from models.Vessel import Vessel
 
 
 class Simulation(metaclass=Singleton):
@@ -13,67 +16,66 @@ class Simulation(metaclass=Singleton):
         self.tick_rate = 60
         self.mmsi_starting_number = 10_000_000
         self.mmsi = self.mmsi_starting_number
-        self.vessels = []
-        self.vessels_ordered_by_mmsi = []
+        self.routes: list[Route] = []
+        self.vessels_ordered_by_mmsi: list[Vessel] = []
         self.selected_vessel = None
         print('Vessels are generated')
 
     def next_tick(self, selected_vessel):
         closest = []
 
-        Util.dump('./data/ship_positions.json', self.vessels)
-        for x in self.vessels:
-            for y in x['vessels']:
+        for route in self.routes:
+            for vessel in route.vessels:
+                vessel: Vessel = vessel
+                index = vessel.current_route_index
+                current_destination = route.coordinates[index + 1]
+                distance = Calculation.calculate_distance(current_destination[1], current_destination[0], vessel.lat,
+                                                          vessel.lon)
 
-                index = y['current_route_index']
-                current_destination = x['route'][index + 1]
-                distance = Calculation.calculate_distance(current_destination[1], current_destination[0], y['lat'],
-                                                          y['lon'])
-
-                if y["last_distance_to_current_mid_point_end"] < distance:
-                    if len(x['route']) <= index + 2:
-                        del y
+                if vessel.last_distance_to_current_mid_point_end < distance:
+                    if len(route.coordinates) <= index + 2:
+                        del vessel
                         continue
-                    next_destination = x['route'][index + 2]
-                    slope = Calculation.calculate_bearing(math.radians(next_destination[0] - current_destination[0]),
-                                                          math.radians(current_destination[1]),
-                                                          math.radians(next_destination[1]))
-                    y['course'] = math.degrees(slope)
-                    y['bearing'] = y['course']
+                    next_destination = route.coordinates[index + 2]
+                    slope = Calculation.calculate_bearing(next_destination[0] - current_destination[0],
+                                                          current_destination[1],
+                                                          next_destination[1])
+                    vessel.course = math.degrees(slope)
+                    vessel.bearing = vessel.course
                     current_destination = next_destination
-                    y['current_route_index'] = index + 1
-                    distance = Calculation.calculate_distance(current_destination[1], current_destination[0], y['lat'],
-                                                              y['lon'])
-                y["last_distance_to_current_mid_point_end"] = distance
+                    vessel.current_route_index = index + 1
+                    distance = Calculation.calculate_distance(current_destination[1], current_destination[0], vessel.lat,
+                                                              vessel.lon)
+                vessel.last_distance_to_current_mid_point_end = distance
 
-                results = Calculation.calculate_destination(y["distance_per_tick"], math.radians(y['bearing']),
-                                                            math.radians(y['lat']), math.radians(y['lon']))
-                y['lat'] = results[0]
-                y['lon'] = results[1]
+                results = Calculation.calculate_destination(vessel.distance_per_tick, vessel.bearing,
+                                                            vessel.lat, vessel.lon)
+                vessel.lat = results[0]
+                vessel.lon = results[1]
                 if selected_vessel.mmsi != -1:
                     closest = self.find_closest_vessels_of_selected_vessel(selected_vessel.mmsi)
-        return {"generatedVessels": self.vessels, "closestVessels": closest}
+        return {"generatedVessels": Util.serialize_dataclass_array(self.routes), "closestVessels": Util.serialize_dataclass_array(closest)}
 
     def start_simulation(self):
         with open('./data/routes.json') as f:
             data = json.load(f)
 
-        for x in data:
-            coordinates = x["coordinates"]
-            self.vessels.append({
-                "route_id": x["route_id"],
-                "from": x["from"],
-                "to": x["to"],
-                "route": coordinates,
-                "vessels": []
-            })
+        for raw_route in data:
+            coordinates = raw_route["coordinates"]
+            route = Route(route_id=raw_route["route_id"],
+                          _from=raw_route["from"],
+                          to=raw_route["to"],
+                          coordinates=coordinates,
+                          vessels=[],
+                          density=raw_route["density"], noise=raw_route["noise"])
+            self.routes.append(route)
             for (i, (f, s)) in enumerate(zip(coordinates[:-1], coordinates[1:])):
-                for y in self.generate(f, s, i, x["density"][i], x["noise"][i]):
-                    self.vessels[-1]['vessels'].append(y)
+                for y in self.generate(f, s, i, route.density[i], route.noise[i]):
+                    self.routes[-1].vessels.append(y)
 
-        Util.dump('./data/ship_positions.json', self.vessels)
-
-        return {"generatedVessels": self.vessels, "closestVessels": []}
+        serialized = Util.serialize_dataclass_array(self.routes)
+        Util.dump('./data/ship_positions.json', serialized)
+        return {"generatedVessels": serialized, "closestVessels": []}
 
     def find_closest_vessels_of_selected_vessel(self, mmsi: int):
         self.selected_vessel = self.vessels_ordered_by_mmsi[mmsi - self.mmsi_starting_number]
@@ -81,31 +83,26 @@ class Simulation(metaclass=Singleton):
 
         return closest
 
-    def generate(self, coordinates_1: list[float], coordinates_2: list[float], current_route_index, density: int = 5,
-                 noise: float = 0.05):
+    def generate(self, coordinates_1: list[float], coordinates_2: list[float], current_route_index, density: int = 5, noise: float = 0.05):
         current_vessels = []
         for _ in range(density):
-            rand_point = Calculation.get_random_point(
-                coordinates_1[0], coordinates_1[1], coordinates_2[0], coordinates_2[1], noise)
+            rand_point = Calculation.get_random_point(coordinates_1[0], coordinates_1[1], coordinates_2[0], coordinates_2[1], noise)
             generated_vessel_type = Simulation().generate_type()
-            metadata = {
-                "vessel_type": generated_vessel_type["name"],
-                "mmsi": Simulation().mmsi,
-                "course": rand_point[2],
-                "bearing": rand_point[2],
-                "heading": rand_point[2],
-                "distance_per_tick": generated_vessel_type["speed"]["value"] / self.tick_rate,
-                "lon": rand_point[0],
-                "lat": rand_point[1],
-                "aisRange": generated_vessel_type["aisRange"]["value"],
-                "aisBroadcastInterval": generated_vessel_type["aisBroadcastInterval"]["value"],
-                "current_route_index": current_route_index,
-                "last_distance_to_current_mid_point_end": Calculation.calculate_distance(coordinates_2[1],
-                                                                                         coordinates_2[0],
-                                                                                         rand_point[1], rand_point[0])
-            }
-            current_vessels.append(metadata)
-            self.vessels_ordered_by_mmsi.append(metadata)
+            print(rand_point)
+            generated_vessel = Vessel(mmsi=Simulation().mmsi, course=rand_point[2],
+                                      bearing=rand_point[2], heading=rand_point[2],
+                                      distance_per_tick=generated_vessel_type["speed"]["value"] / self.tick_rate,
+                                      lat=rand_point[1], lon=rand_point[0],
+                                      ais_range=generated_vessel_type["aisRange"]["value"],
+                                      ais_broadcast_interval=generated_vessel_type["aisBroadcastInterval"]["value"],
+                                      current_route_index=current_route_index,
+                                      last_distance_to_current_mid_point_end=Calculation.calculate_distance(
+                                          coordinates_2[1],
+                                          coordinates_2[0],
+                                          rand_point[1], rand_point[0]),
+                                      vessel_type=generated_vessel_type["name"])
+            current_vessels.append(generated_vessel)
+            self.vessels_ordered_by_mmsi.append(generated_vessel)
             Simulation().mmsi += 1
         return current_vessels
 

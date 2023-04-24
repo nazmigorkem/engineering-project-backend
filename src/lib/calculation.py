@@ -7,6 +7,9 @@ EARTH_RADIUS = 6_371_000
 class Calculation:
     @staticmethod
     def calculate_destination(distance, bearing, latitude, longitude):
+        bearing = math.radians(bearing)
+        latitude = math.radians(latitude)
+        longitude = math.radians(longitude)
         distance_over_radius = distance / EARTH_RADIUS
         latitude_differance = distance_over_radius * math.cos(bearing)
         destination_latitude = latitude + latitude_differance
@@ -38,8 +41,7 @@ class Calculation:
         diff_y = (y2 - y1)
         diff_x = (x2 - x1)
 
-        rad = Calculation.calculate_bearing(math.radians(
-            diff_x), math.radians(y1), math.radians(y2))
+        rad = Calculation.calculate_bearing(diff_x, y1, y2)
         deg = math.degrees(rad)
 
         slope = math.tan(rad)

@@ -11,14 +11,6 @@ class Vessels:
     generator = None
 
     @staticmethod
-    @router.get("/get", response_model=list[list[VesselType]])
-    def get():
-        with open('./data/ship_positions.json') as f:
-            data = json.load(f)
-
-        return data
-
-    @staticmethod
     @router.post("/reset")
     def get():
         Simulation.clear()
@@ -35,4 +27,5 @@ class Vessels:
     @router.post("/generate")
     def generate(selected_vessel: VesselType = None):
         generator = Simulation()
-        return Simulation().start_simulation() if len(generator.vessels) == 0 else Simulation().next_tick(selected_vessel)
+
+        return Simulation().start_simulation() if len(generator.routes) == 0 else Simulation().next_tick(selected_vessel)

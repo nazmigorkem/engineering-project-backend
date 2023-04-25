@@ -1,4 +1,4 @@
-from models import Vessel
+from models.Vessel import Vessel
 from dataclasses import dataclass
 
 

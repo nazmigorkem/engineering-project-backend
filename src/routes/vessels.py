@@ -1,7 +1,9 @@
-import json
 from fastapi import APIRouter
-from typings.vessel import VesselType, SelectedVessel
 from generator.simulation import Simulation
+from models.Vessel import Vessel
+from models.SelectedVessel import SelectedVessel
+from models.GenerateResponse import GenerateResponse
+
 
 router = APIRouter()
 router.prefix = "/vessels"
@@ -19,13 +21,13 @@ class Vessels:
         }
 
     @staticmethod
-    @router.post("/select")
+    @router.post("/select", response_model=list[Vessel])
     async def select(vessel: SelectedVessel):
         return Simulation().find_closest_vessels_of_selected_vessel(vessel.mmsi)
 
     @staticmethod
-    @router.post("/generate")
-    def generate(selected_vessel: VesselType = None):
+    @router.post("/generate", response_model=GenerateResponse)
+    def generate(selected_vessel: Vessel = None):
         generator = Simulation()
 
         return Simulation().start_simulation() if len(generator.routes) == 0 else Simulation().next_tick(selected_vessel)

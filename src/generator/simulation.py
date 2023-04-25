@@ -7,6 +7,7 @@ from lib.singleton import Singleton
 from lib.util import Util
 from models.Route import Route
 from models.Vessel import Vessel
+from models.GenerateResponse import GenerateResponse
 
 
 class Simulation(metaclass=Singleton):
@@ -54,7 +55,8 @@ class Simulation(metaclass=Singleton):
                 vessel.lon = results[1]
                 if selected_vessel.mmsi != -1:
                     closest = self.find_closest_vessels_of_selected_vessel(selected_vessel.mmsi)
-        return {"generatedVessels": Util.serialize_dataclass_array(self.routes), "closestVessels": Util.serialize_dataclass_array(closest)}
+
+        return GenerateResponse(self.routes, closest)
 
     def start_simulation(self):
         with open('./data/routes.json') as f:
@@ -73,9 +75,7 @@ class Simulation(metaclass=Singleton):
                 for y in self.generate(f, s, i, route.density[i], route.noise[i]):
                     self.routes[-1].vessels.append(y)
 
-        serialized = Util.serialize_dataclass_array(self.routes)
-        Util.dump('./data/ship_positions.json', serialized)
-        return {"generatedVessels": serialized, "closestVessels": []}
+        return GenerateResponse(self.routes, [])
 
     def find_closest_vessels_of_selected_vessel(self, mmsi: int):
         self.selected_vessel = self.vessels_ordered_by_mmsi[mmsi - self.mmsi_starting_number]
@@ -88,7 +88,6 @@ class Simulation(metaclass=Singleton):
         for _ in range(density):
             rand_point = Calculation.get_random_point(coordinates_1[0], coordinates_1[1], coordinates_2[0], coordinates_2[1], noise)
             generated_vessel_type = Simulation().generate_type()
-            print(rand_point)
             generated_vessel = Vessel(mmsi=Simulation().mmsi, course=rand_point[2],
                                       bearing=rand_point[2], heading=rand_point[2],
                                       distance_per_tick=generated_vessel_type["speed"]["value"] / self.tick_rate,

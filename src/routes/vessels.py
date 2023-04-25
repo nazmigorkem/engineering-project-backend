@@ -3,7 +3,7 @@ from lib.simulation import Simulation
 from models.Vessel import Vessel
 from models.SelectedVessel import SelectedVessel
 from models.GenerateResponse import GenerateResponse
-
+from lib.FSM import Detector
 
 router = APIRouter()
 router.prefix = "/vessels"
@@ -23,6 +23,7 @@ class Vessels:
     @staticmethod
     @router.post("/select", response_model=list[Vessel])
     async def select(vessel: SelectedVessel):
+        Detector.clear()
         return Simulation().find_closest_vessels_of_selected_vessel(vessel.mmsi)
 
     @staticmethod

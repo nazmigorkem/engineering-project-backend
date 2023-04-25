@@ -35,12 +35,13 @@ class Calculation:
         return EARTH_RADIUS * c
 
     @staticmethod
-    def get_random_point(from_: LatLongExpression, to: LatLongExpression, noise: float) -> tuple[LatLongExpression, float]:
+    def get_random_point(from_: LatLongExpression, to: LatLongExpression, noise: float) -> tuple[LatLongExpression, float, bool]:
         diff_y = (to.longitude_in_degrees - from_.longitude_in_degrees)
         diff_x = (to.latitude_in_degrees - from_.latitude_in_degrees)
 
+        is_going_reverse_route = random.random() > 0.5
         rad = Calculation.calculate_bearing(from_, to)
-        deg = math.degrees(rad)
+        deg = math.degrees(rad) + (180 if is_going_reverse_route else 0)
 
         slope = math.tan(rad)
         perpendicular_slope = -1 / slope
@@ -58,7 +59,7 @@ class Calculation:
         return (LatLongExpression(latitude_in_degrees=noised_x,
                                   latitude_in_radians=math.radians(noised_x),
                                   longitude_in_degrees=noised_y,
-                                  longitude_in_radians=math.radians(noised_y)),  deg)
+                                  longitude_in_radians=math.radians(noised_y)),  deg, is_going_reverse_route)
 
     # returns radian
     @staticmethod

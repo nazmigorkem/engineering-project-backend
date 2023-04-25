@@ -1,19 +1,15 @@
 from enum import Enum
 from models.Vessel import Vessel
 from lib.singleton import Singleton
-
-
-class States(Enum):
-    FIRST_CAPTURE = 1
-    CALCULATED_AS_IN_RANGE = 2
-    CALCULATED_AS_NOT_IN_RANGE = 3
-    POSSIBLE_DARK_ACTIVITY = 4
+from models.FSMState import FSMState, States
 
 
 class Detector(metaclass=Singleton):
-    vessel_states = []
-    selected_vessel = None
-
-    def __init__(self,  vessels: list[Vessel], selected_vessel: Vessel):
-        self.vessel_states = []
+    def __init__(self, closest_vessels: list[Vessel], selected_vessel: Vessel):
+        self.vessel_states: list[FSMState] = []
+        for vessel in closest_vessels:
+            self.vessel_states.append(FSMState(States.CALCULATED_AS_IN_RANGE, vessel))
         self.selected_vessel = selected_vessel
+
+    def next_state(self, new_closest_vessels: list[Vessel]):
+        pass

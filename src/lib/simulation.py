@@ -5,6 +5,7 @@ import random
 from lib.calculation import Calculation
 from lib.singleton import Singleton
 from lib.util import Util
+from lib.FSM import Detector
 from models.Route import Route
 from models.Vessel import Vessel
 from models.GenerateResponse import GenerateResponse
@@ -64,21 +65,25 @@ class Simulation(metaclass=Singleton):
                 distance = Calculation.calculate_distance(current_destination, vessel.position)
 
                 if vessel.last_distance_to_current_mid_point_end < distance:
-                    if len(route.coordinates) <= index + 2:
+                    if not vessel.is_going_reverse_route and len(route.coordinates) <= index + 2:
                         del vessel
                         continue
-                    next_destination = route.coordinates[index + 2]
+                    elif vessel.is_going_reverse_route and index - 2 <= 0:
+                        del vessel
+                        continue
+                    next_destination = route.coordinates[index + 2 if not vessel.is_going_reverse_route else index - 2]
                     slope = Calculation.calculate_bearing(current_destination, next_destination)
                     vessel.course = math.degrees(slope)
                     vessel.bearing = vessel.course
                     current_destination = next_destination
-                    vessel.current_route_index = index + 1
+                    vessel.current_route_index = index + 1 if not vessel.is_going_reverse_route else index - 1
                     distance = Calculation.calculate_distance(current_destination, vessel.position)
                 vessel.last_distance_to_current_mid_point_end = distance
 
                 vessel.position = Calculation.calculate_destination(vessel.distance_per_tick, vessel.bearing, vessel.position)
                 if selected_vessel.mmsi != -1:
                     closest = self.find_closest_vessels_of_selected_vessel(selected_vessel.mmsi)
+                    Detector(closest_vessels=closest, selected_vessel=selected_vessel).next_state(closest)
 
         return GenerateResponse(self.routes, closest)
 
@@ -109,7 +114,7 @@ class Simulation(metaclass=Singleton):
                                       ais_broadcast_interval=generated_vessel_type.ais_broadcast_interval.value,
                                       current_route_index=current_route_index,
                                       last_distance_to_current_mid_point_end=Calculation.calculate_distance(rand_point[0], to),
-                                      vessel_type=generated_vessel_type.name)
+                                      vessel_type=generated_vessel_type.name, is_going_reverse_route=rand_point[2])
             current_vessels.append(generated_vessel)
             self.vessels_ordered_by_mmsi.append(generated_vessel)
             Simulation().mmsi += 1

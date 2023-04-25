@@ -14,4 +14,5 @@ class Vessel:
     ais_range: float
     ais_broadcast_interval: int
     current_route_index: int
+    is_going_reverse_route: bool
     last_distance_to_current_mid_point_end: float

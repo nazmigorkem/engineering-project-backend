@@ -1,11 +1,11 @@
 from dataclasses import dataclass
+from models.LatLong import LatLongExpression
 
 
 @dataclass
 class Vessel:
     mmsi: int
-    lat: float
-    lon: float
+    position: LatLongExpression
     course: float
     heading: float
     bearing: float

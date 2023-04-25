@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from generator.simulation import Simulation
+from lib.simulation import Simulation
 from models.Vessel import Vessel
 from models.SelectedVessel import SelectedVessel
 from models.GenerateResponse import GenerateResponse
@@ -30,4 +30,4 @@ class Vessels:
     def generate(selected_vessel: Vessel = None):
         generator = Simulation()
 
-        return Simulation().start_simulation() if len(generator.routes) == 0 else Simulation().next_tick(selected_vessel)
+        return Simulation().start_simulation() if not generator.is_simulation_started else Simulation().next_tick(selected_vessel)

@@ -1,13 +1,14 @@
 from models.Vessel import Vessel
 from dataclasses import dataclass
+from models.LatLong import LatLongExpression
 
 
 @dataclass
 class Route:
     route_id: int
-    _from: str
+    from_: str
     to: str
     density: list[int]
     noise: list[int]
-    coordinates: list[tuple[int, int]]
+    coordinates: list[LatLongExpression]
     vessels: list[Vessel]

@@ -45,4 +45,4 @@ class Util:
 
     @staticmethod
     def check_range(selected_vessel: Vessel, other_vessel: Vessel) -> bool:
-        return Calculation.calculate_distance(selected_vessel.lat, selected_vessel.lon, other_vessel.lat, other_vessel.lon) < other_vessel.ais_range
+        return Calculation.calculate_distance(selected_vessel.position, other_vessel.position) < other_vessel.ais_range

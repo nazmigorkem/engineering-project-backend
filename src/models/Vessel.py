@@ -6,6 +6,7 @@ from models.LatLong import LatLongExpression
 class Vessel:
     mmsi: int
     position: LatLongExpression
+    dark_activity: bool
     course: float
     heading: float
     bearing: float

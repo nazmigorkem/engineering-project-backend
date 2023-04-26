@@ -65,11 +65,8 @@ class Simulation(metaclass=Singleton):
                 distance = Calculation.calculate_distance(current_destination, vessel.position)
 
                 if vessel.last_distance_to_current_mid_point_end < distance:
-                    if not vessel.is_going_reverse_route and len(route.coordinates) <= index + 2:
-                        del vessel
-                        continue
-                    elif vessel.is_going_reverse_route and index - 2 <= 0:
-                        del vessel
+                    if not vessel.is_going_reverse_route and len(route.coordinates) == index + 2:
+                        route.vessels.remove(vessel)
                         continue
                     next_destination = route.coordinates[index + 2 if not vessel.is_going_reverse_route else index - 2]
                     slope = Calculation.calculate_bearing(current_destination, next_destination)
@@ -81,9 +78,9 @@ class Simulation(metaclass=Singleton):
                 vessel.last_distance_to_current_mid_point_end = distance
 
                 vessel.position = Calculation.calculate_destination(vessel.distance_per_tick, vessel.bearing, vessel.position)
-                if selected_vessel.mmsi != -1:
-                    closest = self.find_closest_vessels_of_selected_vessel(selected_vessel.mmsi)
-                    Detector(closest_vessels=closest, selected_vessel=selected_vessel).next_state(closest)
+        if selected_vessel.mmsi != -1:
+            closest = self.find_closest_vessels_of_selected_vessel(selected_vessel.mmsi)
+            Detector(closest_vessels=closest, selected_vessel=self.vessels_ordered_by_mmsi[selected_vessel.mmsi - self.mmsi_starting_number]).next_state(closest)
 
         return GenerateResponse(self.routes, closest)
 

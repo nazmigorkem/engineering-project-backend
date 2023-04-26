@@ -1,7 +1,10 @@
 import dataclasses
 import json
+from builtins import int
+
 from lib.calculation import Calculation
 from models.Vessel import Vessel
+from models.LatLong import LatLongExpression
 
 
 class Util:
@@ -38,11 +41,11 @@ class Util:
 
         for x in arr:
             x: Vessel = x
-            if x.mmsi != selected_vessel.mmsi and Util.check_range(selected_vessel, x):
+            if x.mmsi != selected_vessel.mmsi and Util.check_range(selected_vessel.position, x.position, x.ais_range):
                 final_arr.append(x)
 
         return final_arr
 
     @staticmethod
-    def check_range(selected_vessel: Vessel, other_vessel: Vessel) -> bool:
-        return Calculation.calculate_distance(selected_vessel.position, other_vessel.position) < other_vessel.ais_range
+    def check_range(selected_vessel_position: LatLongExpression, other_vessel_position: LatLongExpression, other_vessel_ais_range: float | int) -> bool:
+        return Calculation.calculate_distance(selected_vessel_position, other_vessel_position) < other_vessel_ais_range

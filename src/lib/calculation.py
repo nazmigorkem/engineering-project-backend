@@ -7,7 +7,7 @@ EARTH_RADIUS = 6_371_000
 
 class Calculation:
     @staticmethod
-    def calculate_destination(distance, bearing, current_position: LatLongExpression) -> LatLongExpression:
+    def calculate_destination(distance: int | float, bearing: float, current_position: LatLongExpression) -> LatLongExpression:
         bearing = math.radians(bearing)
         distance_over_radius = distance / EARTH_RADIUS
         latitude_differance = distance_over_radius * math.cos(bearing)
@@ -39,7 +39,7 @@ class Calculation:
         diff_y = (to.longitude_in_degrees - from_.longitude_in_degrees)
         diff_x = (to.latitude_in_degrees - from_.latitude_in_degrees)
 
-        is_going_reverse_route = random.random() > 0.5
+        is_going_reverse_route = False
         rad = Calculation.calculate_bearing(from_, to)
         deg = math.degrees(rad) + (180 if is_going_reverse_route else 0)
 

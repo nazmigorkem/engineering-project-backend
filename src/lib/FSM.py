@@ -12,17 +12,17 @@ class Detector(metaclass=Singleton):
         self.selected_vessel = selected_vessel
         self.estimate_positions(closest_vessels)
 
-    def next_state(self, new_closest_vessels: list[Vessel]):
+    def next_state(self, new_closest_vessels: list[Vessel]) -> list[Vessel]:
         for calculated_as_in_range in self.calculated_as_in_range:
             is_found = False
             for new_closest_vessel in new_closest_vessels:
                 if new_closest_vessel.mmsi == calculated_as_in_range.mmsi:
                     is_found = True
                     break
-            if not is_found:
+            if not is_found and calculated_as_in_range not in self.possible_dark_activities:
                 self.possible_dark_activities.append(calculated_as_in_range)
         self.estimate_positions(new_closest_vessels)
-        print(list(map(lambda x: x.mmsi, self.possible_dark_activities)))
+        return self.possible_dark_activities
 
     def estimate_positions(self, new_closest_vessels: list[Vessel]):
         self.calculated_as_in_range = []

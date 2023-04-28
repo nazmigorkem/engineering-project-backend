@@ -54,6 +54,7 @@ class Simulation(metaclass=Singleton):
         self.mmsi_starting_number = 10_000_000
         self.mmsi = self.mmsi_starting_number
         self.vessels_ordered_by_mmsi: list[Vessel] = []
+        self.total_dark_activity_for_whole_simulation: list[Vessel] = []
         self.selected_vessel = None
         self.is_simulation_started = False
         print('Vessels are generated')
@@ -61,7 +62,6 @@ class Simulation(metaclass=Singleton):
     def next_tick(self, selected_vessel: Vessel) -> GenerateResponse:
         closest = []
         closest_dark_activity_vessels = []
-        total_dark_activity_vessels = []
 
         for route in self.routes:
             for vessel in route.vessels:
@@ -89,15 +89,15 @@ class Simulation(metaclass=Singleton):
             range_check_result = self.find_closest_vessels_of_selected_vessel(selected_vessel.mmsi)
             closest = range_check_result.closest_vessels
             closest_dark_activity_vessels = range_check_result.closest_dark_activity_vessels
-            total_dark_activity_vessels = Detector(closest_vessels=closest,
-                                                   selected_vessel=self.vessels_ordered_by_mmsi[
-                                                       selected_vessel.mmsi - self.mmsi_starting_number]).next_state(
-                closest)
+            detected_dark_activities = Detector(closest_vessels=closest,
+                                                selected_vessel=self.vessels_ordered_by_mmsi[selected_vessel.mmsi - self.mmsi_starting_number]).next_state(closest)
+            for x in detected_dark_activities:
+                if x not in self.total_dark_activity_for_whole_simulation:
+                    self.total_dark_activity_for_whole_simulation.append(x)
 
         return GenerateResponse(self.routes,
-                                RangeCheckResponse(closest_vessels=closest,
-                                                   closest_dark_activity_vessels=closest_dark_activity_vessels),
-                                total_dark_activity_vessels=total_dark_activity_vessels)
+                                RangeCheckResponse(closest_vessels=closest, closest_dark_activity_vessels=closest_dark_activity_vessels),
+                                total_dark_activity_vessels=self.total_dark_activity_for_whole_simulation)
 
     def start_simulation(self) -> GenerateResponse:
         for (ith_route, route) in enumerate(self.routes):

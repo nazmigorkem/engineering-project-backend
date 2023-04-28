@@ -30,7 +30,6 @@ class Vessels:
     @staticmethod
     @router.post("/dark_activity")
     def dark_activity(is_dark_activity: bool, selected_vessel_mmsi_for_dark_activity: int):
-        print(is_dark_activity, selected_vessel_mmsi_for_dark_activity)
         Simulation().update_dark_activity_status(is_dark_activity, selected_vessel_mmsi_for_dark_activity)
 
     @staticmethod

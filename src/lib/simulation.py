@@ -67,19 +67,22 @@ class Simulation(metaclass=Singleton):
             for vessel in route.vessels:
                 vessel: Vessel = vessel
                 index = vessel.current_route_index
-                current_destination = route.coordinates[index + 1]
+                current_destination = route.coordinates[(index + 1) if not vessel.is_going_reverse_route else (index - 1)]
                 distance = Calculation.calculate_distance(current_destination, vessel.position)
 
                 if vessel.last_distance_to_current_mid_point_end < distance:
                     if not vessel.is_going_reverse_route and len(route.coordinates) == index + 2:
                         route.vessels.remove(vessel)
                         continue
-                    next_destination = route.coordinates[index + 2 if not vessel.is_going_reverse_route else index - 2]
+                    elif vessel.is_going_reverse_route and index - 2 == -1:
+                        route.vessels.remove(vessel)
+                        continue
+                    next_destination = route.coordinates[(index + 2) if not vessel.is_going_reverse_route else (index - 2)]
                     slope = Calculation.calculate_bearing(current_destination, next_destination)
                     vessel.course = math.degrees(slope)
                     vessel.bearing = vessel.course
                     current_destination = next_destination
-                    vessel.current_route_index = index + 1 if not vessel.is_going_reverse_route else index - 1
+                    vessel.current_route_index = (index + 1) if not vessel.is_going_reverse_route else (index - 1)
                     distance = Calculation.calculate_distance(current_destination, vessel.position)
                 vessel.last_distance_to_current_mid_point_end = distance
 
@@ -123,9 +126,9 @@ class Simulation(metaclass=Singleton):
                                       position=rand_point[0],
                                       ais_range=generated_vessel_type.ais_range.value,
                                       ais_broadcast_interval=generated_vessel_type.ais_broadcast_interval.value,
-                                      current_route_index=current_route_index,
+                                      current_route_index=current_route_index if not rand_point[2] else current_route_index + 1,
                                       last_distance_to_current_mid_point_end=Calculation.calculate_distance(
-                                          rand_point[0], to),
+                                          rand_point[0], to if not rand_point[2] else from_),
                                       vessel_type=generated_vessel_type.name, is_going_reverse_route=rand_point[2],
                                       dark_activity=False)
             current_vessels.append(generated_vessel)

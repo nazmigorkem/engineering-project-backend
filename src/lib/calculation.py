@@ -39,7 +39,7 @@ class Calculation:
         diff_y = (to.longitude_in_degrees - from_.longitude_in_degrees)
         diff_x = (to.latitude_in_degrees - from_.latitude_in_degrees)
 
-        is_going_reverse_route = False
+        is_going_reverse_route = True if random.random() < 0.5 else False
         rad = Calculation.calculate_bearing(from_, to)
         deg = math.degrees(rad) + (180 if is_going_reverse_route else 0)
 

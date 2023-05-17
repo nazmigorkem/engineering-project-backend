@@ -65,7 +65,6 @@ class Simulation(metaclass=Singleton):
 
         for route in self.routes:
             for vessel in route.vessels:
-                vessel: Vessel = vessel
                 index = vessel.current_route_index
                 current_route = route.coordinates[index]
                 current_destination = route.coordinates[(index + 1) if not vessel.is_going_reverse_route else (index - 1)]
@@ -80,11 +79,13 @@ class Simulation(metaclass=Singleton):
                 vessel.bearing = vessel.course
                 vessel.heading = vessel.course
                 if vessel.last_distance_to_current_mid_point_end < distance:
-                    if not vessel.is_going_reverse_route and len(route.coordinates) == index + 2:
+                    if (not vessel.is_going_reverse_route and len(route.coordinates) == index + 2) or (vessel.is_going_reverse_route and index - 2 == -1):
                         route.vessels.remove(vessel)
-                        continue
-                    elif vessel.is_going_reverse_route and index - 2 == -1:
-                        route.vessels.remove(vessel)
+                        if random.random() < 0.5:
+                            new_vessel = self.generate(route.coordinates[0], route.coordinates[1], 0, 1, route.noise[0], (True, False))[0]
+                        else:
+                            new_vessel = self.generate(route.coordinates[-2], route.coordinates[-1], len(route.coordinates) - 2, 1, route.noise[-1], (True, True))[0]
+                        route.vessels.append(new_vessel)
                         continue
                     next_destination = route.coordinates[(index + 2) if not vessel.is_going_reverse_route else (index - 2)]
                     slope = Calculation.calculate_bearing(current_destination, next_destination)
@@ -124,11 +125,11 @@ class Simulation(metaclass=Singleton):
         self.selected_vessel = self.vessels_ordered_by_mmsi[mmsi - self.mmsi_starting_number]
         return Util.find_in_range(self.vessels_ordered_by_mmsi, self.selected_vessel)
 
-    def generate(self, from_: LatLongExpression, to: LatLongExpression, current_route_index, density: int = 5,
-                 noise: float = 0.05) -> list[Vessel]:
+    def generate(self, from_: LatLongExpression, to: LatLongExpression, current_route_index: int, density: int = 5,
+                 noise: float = 0.05, force_direction: (bool, bool) = (False, False)) -> list[Vessel]:
         current_vessels = []
         for _ in range(density):
-            rand_point = Calculation.get_random_point(from_, to, noise)
+            rand_point = Calculation.get_random_point(from_, to, noise, force_direction)
             generated_vessel_type = Simulation().generate_type()
             generated_vessel = Vessel(mmsi=Simulation().mmsi, course=rand_point[1],
                                       bearing=rand_point[1], heading=rand_point[1],

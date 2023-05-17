@@ -67,9 +67,18 @@ class Simulation(metaclass=Singleton):
             for vessel in route.vessels:
                 vessel: Vessel = vessel
                 index = vessel.current_route_index
+                current_route = route.coordinates[index]
                 current_destination = route.coordinates[(index + 1) if not vessel.is_going_reverse_route else (index - 1)]
                 distance = Calculation.calculate_distance(current_destination, vessel.position)
+                slope = math.degrees(Calculation.calculate_bearing(current_route, current_destination))
 
+                if vessel.course != slope:
+                    vessel.course = slope
+                elif random.random() < 0.5:
+                    vessel.course = vessel.course + (vessel.course / 8 * (1 if random.random() < 0.5 else -1))
+
+                vessel.bearing = vessel.course
+                vessel.heading = vessel.course
                 if vessel.last_distance_to_current_mid_point_end < distance:
                     if not vessel.is_going_reverse_route and len(route.coordinates) == index + 2:
                         route.vessels.remove(vessel)
@@ -81,6 +90,7 @@ class Simulation(metaclass=Singleton):
                     slope = Calculation.calculate_bearing(current_destination, next_destination)
                     vessel.course = math.degrees(slope)
                     vessel.bearing = vessel.course
+                    vessel.heading = vessel.course
                     current_destination = next_destination
                     vessel.current_route_index = (index + 1) if not vessel.is_going_reverse_route else (index - 1)
                     distance = Calculation.calculate_distance(current_destination, vessel.position)

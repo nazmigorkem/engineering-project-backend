@@ -28,13 +28,19 @@ class Vessels:
         return Simulation().find_closest_vessels_of_selected_vessel(selected_vessel_mmsi)
 
     @staticmethod
+    @router.post("/reset_selection")
+    def select():
+        Detector.clear()
+        Simulation().selected_vessel = None
+
+    @staticmethod
     @router.post("/dark_activity")
     def dark_activity(is_dark_activity: bool, selected_vessel_mmsi_for_dark_activity: int):
         Simulation().update_dark_activity_status(is_dark_activity, selected_vessel_mmsi_for_dark_activity)
 
     @staticmethod
     @router.post("/generate", response_model=GenerateResponse)
-    def generate(selected_vessel: Vessel = None):
+    def generate():
         generator = Simulation()
 
-        return Simulation().start_simulation() if not generator.is_simulation_started else Simulation().next_tick(selected_vessel)
+        return Simulation().start_simulation() if not generator.is_simulation_started else Simulation().next_tick()

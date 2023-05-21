@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from lib.simulation import Simulation
-from models.RangeCheckResponse import RangeCheckResponse
-from models.Vessel import Vessel
-from models.GenerateResponse import GenerateResponse
+
 from lib.FSM import Detector
+from lib.simulation import Simulation
+from models.GenerateResponse import GenerateResponse
+from models.RangeCheckResponse import RangeCheckResponse
 
 router = APIRouter()
 router.prefix = "/vessels"

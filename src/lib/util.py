@@ -3,9 +3,9 @@ import json
 from builtins import int
 
 from lib.calculation import Calculation
+from models.LatLong import LatLongExpression
 from models.RangeCheckResponse import RangeCheckResponse
 from models.Vessel import Vessel
-from models.LatLong import LatLongExpression
 
 
 class Util:

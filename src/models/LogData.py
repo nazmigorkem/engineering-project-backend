@@ -9,7 +9,6 @@ class LogData:
     tick_number: int
     generated_vessels: list[Vessel]
     range_check: RangeCheckResponse
-    total_dark_activity_vessels: list[Vessel]
 
     @property
     def __dict__(self):

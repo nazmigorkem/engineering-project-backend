@@ -1,6 +1,7 @@
-from models.Vessel import Vessel
 from dataclasses import dataclass
+
 from models.LatLong import LatLongExpression
+from models.Vessel import Vessel
 
 
 @dataclass

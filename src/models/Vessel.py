@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
+
 from models.LatLong import LatLongExpression
 
 
@@ -17,3 +18,7 @@ class Vessel:
     current_route_index: int
     is_going_reverse_route: bool
     last_distance_to_current_mid_point_end: float
+
+    @property
+    def __dict__(self):
+        return asdict(self)

@@ -2,18 +2,22 @@ import math
 import random
 
 from models.LatLong import LatLongExpression
+
 EARTH_RADIUS = 6_371_000
 
 
 class Calculation:
     @staticmethod
-    def calculate_destination(distance: int | float, bearing: float, current_position: LatLongExpression) -> LatLongExpression:
+    def calculate_destination(distance: int | float, bearing: float,
+                              current_position: LatLongExpression) -> LatLongExpression:
         bearing = math.radians(bearing)
         distance_over_radius = distance / EARTH_RADIUS
         latitude_differance = distance_over_radius * math.cos(bearing)
         destination_latitude = current_position.latitude_in_radians + latitude_differance
-        a_differance = math.log(math.tan(destination_latitude / 2 + math.pi / 4) / math.tan(current_position.latitude_in_radians / 2 + math.pi / 4))
-        q = latitude_differance / a_differance if abs(a_differance) > 10e-12 else math.cos(current_position.latitude_in_radians)
+        a_differance = math.log(math.tan(destination_latitude / 2 + math.pi / 4) / math.tan(
+            current_position.latitude_in_radians / 2 + math.pi / 4))
+        q = latitude_differance / a_differance if abs(a_differance) > 10e-12 else math.cos(
+            current_position.latitude_in_radians)
 
         longitude_differance = distance_over_radius * math.sin(bearing) / q
         destination_longitude = current_position.longitude_in_radians + longitude_differance
@@ -30,12 +34,14 @@ class Calculation:
         latitude_differance = abs(from_.latitude_in_radians - to.latitude_in_radians)
         longitude_differance = abs(from_.longitude_in_radians - to.longitude_in_radians)
 
-        a = math.sin(latitude_differance / 2) ** 2 + math.cos(from_.latitude_in_radians) * math.cos(to.latitude_in_radians) * math.sin(longitude_differance / 2) ** 2
+        a = math.sin(latitude_differance / 2) ** 2 + math.cos(from_.latitude_in_radians) * math.cos(
+            to.latitude_in_radians) * math.sin(longitude_differance / 2) ** 2
         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
         return EARTH_RADIUS * c
 
     @staticmethod
-    def get_random_point(from_: LatLongExpression, to: LatLongExpression, noise: float, force_direction: (bool, bool) = (False, False)) -> tuple[LatLongExpression, float, bool]:
+    def get_random_point(from_: LatLongExpression, to: LatLongExpression, noise: float,
+                         force_direction: (bool, bool) = (False, False)) -> tuple[LatLongExpression, float, bool]:
         diff_y = (to.longitude_in_degrees - from_.longitude_in_degrees)
         diff_x = (to.latitude_in_degrees - from_.latitude_in_degrees)
 
@@ -62,13 +68,14 @@ class Calculation:
         return (LatLongExpression(latitude_in_degrees=noised_x,
                                   latitude_in_radians=math.radians(noised_x),
                                   longitude_in_degrees=noised_y,
-                                  longitude_in_radians=math.radians(noised_y)),  deg, is_going_reverse_route)
+                                  longitude_in_radians=math.radians(noised_y)), deg, is_going_reverse_route)
 
     # returns radian
     @staticmethod
     def calculate_bearing(from_: LatLongExpression, to: LatLongExpression):
         diff_y = to.longitude_in_radians - from_.longitude_in_radians
         y = math.sin(diff_y) * math.cos(to.latitude_in_radians)
-        x = math.cos(from_.latitude_in_radians) * math.sin(to.latitude_in_radians) - math.sin(from_.latitude_in_radians) * \
+        x = math.cos(from_.latitude_in_radians) * math.sin(to.latitude_in_radians) - math.sin(
+            from_.latitude_in_radians) * \
             math.cos(to.latitude_in_radians) * math.cos(diff_y)
         return math.atan2(y, x)

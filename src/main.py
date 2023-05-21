@@ -1,9 +1,9 @@
-from routes.routes import router as router_routes
-from routes.vessels import router as vessels_router
-from routes.ports import router as ports_router
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
+from routes.ports import router as ports_router
+from routes.routes import router as router_routes
+from routes.vessels import router as vessels_router
 
 app = FastAPI()
 

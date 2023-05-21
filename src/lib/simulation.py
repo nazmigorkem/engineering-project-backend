@@ -1,17 +1,18 @@
+import dataclasses
 import json
 import math
 import random
 
+from lib.FSM import Detector
 from lib.calculation import Calculation
 from lib.singleton import Singleton
 from lib.util import Util
-from lib.FSM import Detector
+from models.GenerateResponse import GenerateResponse
+from models.LatLong import LatLongExpression
 from models.RangeCheckResponse import RangeCheckResponse
 from models.Route import Route
 from models.Vessel import Vessel
-from models.GenerateResponse import GenerateResponse
 from models.VesselType import VesselType, ValueField
-from models.LatLong import LatLongExpression
 
 
 class Simulation(metaclass=Singleton):
@@ -67,7 +68,8 @@ class Simulation(metaclass=Singleton):
             for vessel in route.vessels:
                 index = vessel.current_route_index
                 current_route = route.coordinates[index]
-                current_destination = route.coordinates[(index + 1) if not vessel.is_going_reverse_route else (index - 1)]
+                current_destination = route.coordinates[
+                    (index + 1) if not vessel.is_going_reverse_route else (index - 1)]
                 distance = Calculation.calculate_distance(current_destination, vessel.position)
                 slope = math.degrees(Calculation.calculate_bearing(current_route, current_destination))
 
@@ -79,17 +81,23 @@ class Simulation(metaclass=Singleton):
                 vessel.bearing = vessel.course
                 vessel.heading = vessel.course
                 if vessel.last_distance_to_current_mid_point_end < distance:
-                    if (not vessel.is_going_reverse_route and len(route.coordinates) == index + 2) or (vessel.is_going_reverse_route and index - 2 == -1):
+                    if (not vessel.is_going_reverse_route and len(route.coordinates) == index + 2) or (
+                            vessel.is_going_reverse_route and index - 2 == -1):
                         route.vessels.remove(vessel)
                         if self.selected_vessel is not None and self.selected_vessel.mmsi == vessel.mmsi:
                             self.selected_vessel = None
                         if random.random() < 0.5:
-                            new_vessel = self.generate(route.coordinates[0], route.coordinates[1], 0, 1, route.noise[0], (True, False))[0]
+                            new_vessel = self.generate(route.coordinates[0], route.coordinates[1], 0, 1, route.noise[0],
+                                                       (True, False))[0]
                         else:
-                            new_vessel = self.generate(route.coordinates[-2], route.coordinates[-1], len(route.coordinates) - 2, 1, route.noise[-1], (True, True))[0]
+                            new_vessel = \
+                                self.generate(route.coordinates[-2], route.coordinates[-1], len(route.coordinates) - 2,
+                                              1,
+                                              route.noise[-1], (True, True))[0]
                         route.vessels.append(new_vessel)
                         continue
-                    next_destination = route.coordinates[(index + 2) if not vessel.is_going_reverse_route else (index - 2)]
+                    next_destination = route.coordinates[
+                        (index + 2) if not vessel.is_going_reverse_route else (index - 2)]
                     slope = Calculation.calculate_bearing(current_destination, next_destination)
                     vessel.course = math.degrees(slope)
                     vessel.bearing = vessel.course
@@ -106,13 +114,21 @@ class Simulation(metaclass=Singleton):
             closest = range_check_result.closest_vessels
             closest_dark_activity_vessels = range_check_result.closest_dark_activity_vessels
             detected_dark_activities = Detector(closest_vessels=closest,
-                                                selected_vessel=self.vessels_ordered_by_mmsi[self.selected_vessel.mmsi - self.mmsi_starting_number]).next_state(closest)
+                                                selected_vessel=self.vessels_ordered_by_mmsi[
+                                                    self.selected_vessel.mmsi - self.mmsi_starting_number]).next_state(
+                closest)
             for x in detected_dark_activities:
-                if x not in self.total_dark_activity_for_whole_simulation:
-                    self.total_dark_activity_for_whole_simulation.append(x)
+                is_found = False
+                for y in self.total_dark_activity_for_whole_simulation:
+                    if x.mmsi == y.mmsi:
+                        is_found = True
+                        break
+                if not is_found:
+                    self.total_dark_activity_for_whole_simulation.append(dataclasses.replace(x))
 
         return GenerateResponse(self.routes,
-                                RangeCheckResponse(closest_vessels=closest, closest_dark_activity_vessels=closest_dark_activity_vessels),
+                                RangeCheckResponse(closest_vessels=closest,
+                                                   closest_dark_activity_vessels=closest_dark_activity_vessels),
                                 total_dark_activity_vessels=self.total_dark_activity_for_whole_simulation)
 
     def start_simulation(self) -> GenerateResponse:
@@ -139,7 +155,8 @@ class Simulation(metaclass=Singleton):
                                       position=rand_point[0],
                                       ais_range=generated_vessel_type.ais_range.value,
                                       ais_broadcast_interval=generated_vessel_type.ais_broadcast_interval.value,
-                                      current_route_index=current_route_index if not rand_point[2] else current_route_index + 1,
+                                      current_route_index=current_route_index if not rand_point[
+                                          2] else current_route_index + 1,
                                       last_distance_to_current_mid_point_end=Calculation.calculate_distance(
                                           rand_point[0], to if not rand_point[2] else from_),
                                       vessel_type=generated_vessel_type.name, is_going_reverse_route=rand_point[2],

@@ -78,8 +78,6 @@ class Simulation(metaclass=Singleton):
                 elif random.random() < 0.5:
                     vessel.course = vessel.course + (vessel.course / 8 * (1 if random.random() < 0.5 else -1))
 
-                vessel.bearing = vessel.course
-                vessel.heading = vessel.course
                 if vessel.last_distance_to_current_mid_point_end < distance:
                     if (not vessel.is_going_reverse_route and len(route.coordinates) == index + 2) or (
                             vessel.is_going_reverse_route and index - 2 == -1):
@@ -100,23 +98,20 @@ class Simulation(metaclass=Singleton):
                         (index + 2) if not vessel.is_going_reverse_route else (index - 2)]
                     slope = Calculation.calculate_bearing(current_destination, next_destination)
                     vessel.course = math.degrees(slope)
-                    vessel.bearing = vessel.course
-                    vessel.heading = vessel.course
+
                     current_destination = next_destination
                     vessel.current_route_index = (index + 1) if not vessel.is_going_reverse_route else (index - 1)
                     distance = Calculation.calculate_distance(current_destination, vessel.position)
                 vessel.last_distance_to_current_mid_point_end = distance
-
-                vessel.position = Calculation.calculate_destination(vessel.distance_per_tick, vessel.bearing,
-                                                                    vessel.position)
+                vessel.bearing = vessel.course
+                vessel.heading = vessel.course
+                vessel.position = Calculation.calculate_destination(vessel.distance_per_tick, vessel.bearing, vessel.position)
+                
         if self.selected_vessel is not None:
             range_check_result = self.find_closest_vessels_of_selected_vessel(self.selected_vessel.mmsi)
             closest = range_check_result.closest_vessels
             closest_dark_activity_vessels = range_check_result.closest_dark_activity_vessels
-            detected_dark_activities = Detector(closest_vessels=closest,
-                                                selected_vessel=self.vessels_ordered_by_mmsi[
-                                                    self.selected_vessel.mmsi - self.mmsi_starting_number]).next_state(
-                closest)
+            detected_dark_activities = Detector(closest_vessels=closest, selected_vessel=self.selected_vessel).next_state(closest)
             for x in detected_dark_activities:
                 is_found = False
                 for y in self.total_dark_activity_for_whole_simulation:
@@ -125,10 +120,10 @@ class Simulation(metaclass=Singleton):
                         break
                 if not is_found:
                     self.total_dark_activity_for_whole_simulation.append(dataclasses.replace(x))
+                    break
 
         return GenerateResponse(self.routes,
-                                RangeCheckResponse(closest_vessels=closest,
-                                                   closest_dark_activity_vessels=closest_dark_activity_vessels),
+                                RangeCheckResponse(closest_vessels=closest, closest_dark_activity_vessels=closest_dark_activity_vessels),
                                 total_dark_activity_vessels=self.total_dark_activity_for_whole_simulation)
 
     def start_simulation(self) -> GenerateResponse:

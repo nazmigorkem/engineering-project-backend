@@ -53,6 +53,5 @@ class Util:
         return RangeCheckResponse(normal_captured_vessels, dark_activity_vessels)
 
     @staticmethod
-    def check_range(selected_vessel_position: LatLongExpression, other_vessel_position: LatLongExpression,
-                    other_vessel_ais_range: float | int) -> bool:
+    def check_range(selected_vessel_position: LatLongExpression, other_vessel_position: LatLongExpression, other_vessel_ais_range: float | int) -> bool:
         return Calculation.calculate_distance(selected_vessel_position, other_vessel_position) < other_vessel_ais_range

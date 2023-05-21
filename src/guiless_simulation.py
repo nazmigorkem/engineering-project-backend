@@ -13,7 +13,7 @@ for i in range(50):
     if i % 10 == 0 or simulation.selected_vessel is None:
         Detector.clear()
         simulation.selected_vessel = random.choice(simulation.vessels_ordered_by_mmsi)
-    closest_vessels = simulation.find_closest_vessels_of_selected_vessel(simulation.selected_vessel.mmsi)
+    closest_vessels = simulation.find_closest_vessels_of_selected_vessel()
 
     dark_activity_vessel: Vessel = random.choice(simulation.vessels_ordered_by_mmsi)
     if dark_activity_vessel != simulation.selected_vessel:

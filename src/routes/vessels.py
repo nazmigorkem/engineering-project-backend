@@ -25,7 +25,8 @@ class Vessels:
     @router.post("/select", response_model=RangeCheckResponse)
     def select(selected_vessel_mmsi: int):
         Detector.clear()
-        return Simulation().find_closest_vessels_of_selected_vessel(selected_vessel_mmsi)
+        Simulation().selected_vessel = Simulation().vessels_ordered_by_mmsi[selected_vessel_mmsi - Simulation().mmsi_starting_number]
+        return Simulation().find_closest_vessels_of_selected_vessel()
 
     @staticmethod
     @router.post("/reset_selection")

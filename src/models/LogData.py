@@ -7,7 +7,7 @@ from models.Vessel import Vessel
 @dataclass
 class LogData:
     tick_number: int
-    generated_vessels: list[Vessel]
+    selected_vessel: Vessel
     range_check: RangeCheckResponse
 
     @property

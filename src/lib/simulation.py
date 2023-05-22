@@ -61,8 +61,9 @@ class Simulation(metaclass=Singleton):
         print('Vessels are generated')
 
     def next_tick(self) -> GenerateResponse:
-        broadcast_control = RangeCheckResponse([], [], [])
+        broadcast_control = RangeCheckResponse([], [], [], [])
         detected_dark_activities = []
+        detected_out_of_range = []
 
         for route in self.routes:
             for vessel in route.vessels:
@@ -109,8 +110,8 @@ class Simulation(metaclass=Singleton):
 
         if self.selected_vessel is not None:
             broadcast_control = self.find_closest_vessels_of_selected_vessel()
-            detected_dark_activities = Detector(closest_vessels=broadcast_control.closest_vessels,
-                                                selected_vessel=self.selected_vessel).next_state(broadcast_control.closest_vessels)
+            detected_dark_activities, detected_out_of_range = Detector(closest_vessels=broadcast_control.closest_vessels,
+                                                                       selected_vessel=self.selected_vessel).next_state(broadcast_control.closest_vessels)
 
             for x in detected_dark_activities:
                 is_found = False
@@ -125,6 +126,7 @@ class Simulation(metaclass=Singleton):
         return GenerateResponse(self.routes,
                                 RangeCheckResponse(closest_vessels=broadcast_control.closest_vessels,
                                                    detected_dark_activity_vessels=detected_dark_activities,
+                                                   detected_out_of_range_vessels=detected_out_of_range,
                                                    all_dark_activity_vessels=broadcast_control.all_dark_activity_vessels),
                                 total_dark_activity_vessels=self.total_dark_activity_for_whole_simulation)
 
@@ -134,7 +136,7 @@ class Simulation(metaclass=Singleton):
                 for y in self.generate(from_, to, i, route.density[i], route.noise[i]):
                     self.routes[ith_route].vessels.append(y)
         self.is_simulation_started = True
-        return GenerateResponse(self.routes, RangeCheckResponse([], [], []), [])
+        return GenerateResponse(self.routes, RangeCheckResponse([], [], [], []), [])
 
     def find_closest_vessels_of_selected_vessel(self) -> RangeCheckResponse:
         return Util.find_in_range(self.vessels_ordered_by_mmsi, self.selected_vessel)

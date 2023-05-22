@@ -11,26 +11,32 @@ class Detector(metaclass=Singleton):
         self.calculated_as_in_range: list[Vessel] = []
         self.calculated_as_not_in_range: list[Vessel] = []
         self.possible_dark_activities: list[Vessel] = []
+        self.possible_out_of_range: list[Vessel] = []
         self.selected_vessel = selected_vessel
         self.estimate_positions(closest_vessels)
 
-    def next_state(self, new_closest_vessels: list[Vessel]) -> list[Vessel]:
-        for calculated_as_in_range in self.calculated_as_in_range:
+    def next_state(self, new_closest_vessels: list[Vessel]) -> tuple[list[Vessel], list[Vessel]]:
+        self.calculate_possibilities(new_closest_vessels, self.calculated_as_in_range, self.possible_dark_activities)
+        self.calculate_possibilities(new_closest_vessels, self.calculated_as_not_in_range, self.possible_out_of_range)
+        self.estimate_positions(new_closest_vessels)
+        return self.possible_dark_activities, self.possible_out_of_range
+
+    @staticmethod
+    def calculate_possibilities(new_closest_vessels: list[Vessel], calculated_array: list[Vessel], result_array: list[Vessel]):
+        for calculated in calculated_array:
             is_found = False
             for new_closest_vessel in new_closest_vessels:
-                if new_closest_vessel.mmsi == calculated_as_in_range.mmsi:
+                if new_closest_vessel.mmsi == calculated.mmsi:
                     is_found = True
                     break
 
             if not is_found:
-                for past_dark_activities in self.possible_dark_activities:
-                    if past_dark_activities.mmsi == calculated_as_in_range.mmsi:
+                for past_out_of_range in result_array:
+                    if past_out_of_range.mmsi == calculated.mmsi:
                         is_found = True
                         break
                 if not is_found:
-                    self.possible_dark_activities.append(dataclasses.replace(calculated_as_in_range))
-        self.estimate_positions(new_closest_vessels)
-        return self.possible_dark_activities
+                    result_array.append(dataclasses.replace(calculated))
 
     def estimate_positions(self, new_closest_vessels: list[Vessel]):
         self.calculated_as_in_range = []

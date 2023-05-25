@@ -1,3 +1,4 @@
+import dataclasses
 from builtins import int
 
 from lib.calculation import Calculation
@@ -24,3 +25,10 @@ class Util:
     @staticmethod
     def check_range(selected_vessel_position: LatLongExpression, other_vessel_position: LatLongExpression, other_vessel_ais_range: float | int) -> bool:
         return Calculation.calculate_distance(selected_vessel_position, other_vessel_position) < other_vessel_ais_range
+
+    @staticmethod
+    def deep_copy(array):
+        new_array = []
+        for x in array:
+            new_array.append(dataclasses.replace(x))
+        return new_array

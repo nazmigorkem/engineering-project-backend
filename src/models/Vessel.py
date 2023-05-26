@@ -18,6 +18,7 @@ class Vessel:
     current_route_index: int
     is_going_reverse_route: bool
     last_distance_to_current_mid_point_end: float
+    is_removed: bool
 
     @property
     def __dict__(self):

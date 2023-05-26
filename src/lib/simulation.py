@@ -3,8 +3,9 @@ import json
 import math
 import random
 
-from lib.FSM import Detector
+from lib.FSM import Detector as FSMDetector
 from lib.calculation import Calculation
+from lib.machine_learning import Detector as MLDetector
 from lib.singleton import Singleton
 from lib.util import Util
 from models.GenerateResponse import GenerateResponse
@@ -16,9 +17,10 @@ from models.VesselType import VesselType, ValueField
 
 
 class Simulation(metaclass=Singleton):
-    def __init__(self):
+    def __init__(self, detector_method: str):
         self.types: list[VesselType] = []
         self.routes: list[Route] = []
+        self.detector = FSMDetector if detector_method == "FSM" else MLDetector
 
         with open('./data/vessel_types.json') as f:
             types = json.load(f)["vesselTypes"]
@@ -69,7 +71,8 @@ class Simulation(metaclass=Singleton):
             for vessel in route.vessels:
                 index = vessel.current_route_index
                 current_route = route.coordinates[index]
-                current_destination = route.coordinates[(index + 1) if not vessel.is_going_reverse_route else (index - 1)]
+                current_destination = route.coordinates[
+                    (index + 1) if not vessel.is_going_reverse_route else (index - 1)]
                 distance = Calculation.calculate_distance(current_destination, vessel.position)
                 slope = math.degrees(Calculation.calculate_bearing(current_route, current_destination))
 
@@ -82,12 +85,17 @@ class Simulation(metaclass=Singleton):
                     if (not vessel.is_going_reverse_route and len(route.coordinates) == index + 2) or (
                             vessel.is_going_reverse_route and index - 2 == -1):
                         route.vessels.remove(vessel)
+                        self.vessels_ordered_by_mmsi[vessel.mmsi - self.mmsi_starting_number].is_removed = True
+
                         if self.selected_vessel is not None and self.selected_vessel.mmsi == vessel.mmsi:
                             self.selected_vessel = None
                         if random.random() < 0.5:
-                            new_vessel = self.generate(route.coordinates[0], route.coordinates[1], 0, 1, route.noise[0], (True, False))[0]
+                            new_vessel = self.generate(route.coordinates[0], route.coordinates[1], 0, 1, route.noise[0],
+                                                       (True, False))[0]
                         else:
-                            new_vessel = self.generate(route.coordinates[-2], route.coordinates[-1], len(route.coordinates) - 2, 1, route.noise[-1], (True, True))[0]
+                            new_vessel = \
+                            self.generate(route.coordinates[-2], route.coordinates[-1], len(route.coordinates) - 2, 1,
+                                          route.noise[-1], (True, True))[0]
                         route.vessels.append(new_vessel)
                         continue
 
@@ -101,16 +109,21 @@ class Simulation(metaclass=Singleton):
                     distance = Calculation.calculate_distance(current_destination, vessel.position)
                 vessel.last_distance_to_current_mid_point_end = distance
                 vessel.bearing = vessel.course
-                vessel.position = Calculation.calculate_destination(vessel.distance_per_tick, vessel.bearing, vessel.position)
+                vessel.position = Calculation.calculate_destination(vessel.distance_per_tick, vessel.bearing,
+                                                                    vessel.position)
 
-                if (not vessel.is_going_reverse_route and not len(route.coordinates) == index + 2) or (not vessel.is_going_reverse_route and index - 2 == -1):
-                    next_destination = route.coordinates[(index + 2) if not vessel.is_going_reverse_route else (index - 2)]
+                if (not vessel.is_going_reverse_route and not len(route.coordinates) == index + 2) or (
+                        not vessel.is_going_reverse_route and index - 2 == -1):
+                    next_destination = route.coordinates[
+                        (index + 2) if not vessel.is_going_reverse_route else (index - 2)]
                     vessel.heading = math.degrees(Calculation.calculate_bearing(vessel.position, next_destination))
 
         if self.selected_vessel is not None:
             broadcast_control = self.find_closest_vessels_of_selected_vessel()
-            detected_dark_activities, detected_out_of_range = Detector(closest_vessels=broadcast_control.closest_vessels,
-                                                                       selected_vessel=self.selected_vessel).next_state(broadcast_control.closest_vessels)
+            detected_dark_activities, detected_out_of_range = self.detector(
+                closest_vessels=broadcast_control.closest_vessels,
+                selected_vessel=self.selected_vessel).next_state(
+                broadcast_control.closest_vessels)
 
             for x in detected_dark_activities:
                 is_found = False
@@ -157,7 +170,7 @@ class Simulation(metaclass=Singleton):
                                       last_distance_to_current_mid_point_end=Calculation.calculate_distance(
                                           rand_point[0], to if not rand_point[2] else from_),
                                       vessel_type=generated_vessel_type.name, is_going_reverse_route=rand_point[2],
-                                      dark_activity=False)
+                                      dark_activity=False, is_removed=False)
             current_vessels.append(generated_vessel)
             self.vessels_ordered_by_mmsi.append(generated_vessel)
             Simulation().mmsi += 1

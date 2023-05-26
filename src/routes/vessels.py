@@ -1,16 +1,16 @@
 from fastapi import APIRouter
 
-from lib.FSM import Detector
+from lib.machine_learning import Detector
 from lib.simulation import Simulation
 from models.GenerateResponse import GenerateResponse
 from models.RangeCheckResponse import RangeCheckResponse
 
 router = APIRouter()
 router.prefix = "/vessels"
+detector_method = "ML"
 
 
 class Vessels:
-    generator = None
 
     @staticmethod
     @router.post("/reset")
@@ -24,24 +24,25 @@ class Vessels:
     @staticmethod
     @router.post("/select", response_model=RangeCheckResponse)
     def select(selected_vessel_mmsi: int):
-        Detector.clear()
-        Simulation().selected_vessel = Simulation().vessels_ordered_by_mmsi[selected_vessel_mmsi - Simulation().mmsi_starting_number]
-        return Simulation().find_closest_vessels_of_selected_vessel()
+        simulation = Simulation(detector_method)
+        simulation.detector.clear()
+        simulation.selected_vessel = simulation.vessels_ordered_by_mmsi[selected_vessel_mmsi - simulation.mmsi_starting_number]
+        return simulation.find_closest_vessels_of_selected_vessel()
 
     @staticmethod
     @router.post("/reset_selection")
     def select():
         Detector.clear()
-        Simulation().selected_vessel = None
+        Simulation(detector_method).selected_vessel = None
 
     @staticmethod
     @router.post("/dark_activity")
     def dark_activity(is_dark_activity: bool, selected_vessel_mmsi_for_dark_activity: int):
-        Simulation().update_dark_activity_status(is_dark_activity, selected_vessel_mmsi_for_dark_activity)
+        Simulation(detector_method).update_dark_activity_status(is_dark_activity, selected_vessel_mmsi_for_dark_activity)
 
     @staticmethod
     @router.post("/generate", response_model=GenerateResponse)
     def generate():
-        generator = Simulation()
+        simulation = Simulation(detector_method)
 
-        return Simulation().start_simulation() if not generator.is_simulation_started else Simulation().next_tick()
+        return simulation.start_simulation() if not simulation.is_simulation_started else simulation.next_tick()

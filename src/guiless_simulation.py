@@ -2,13 +2,14 @@ import csv
 import dataclasses
 import random
 
-from lib.FSM import Detector
 from lib.calculation import Calculation
 from lib.simulation import Simulation
 from lib.util import Util
 from models.GenerateResponse import GenerateResponse
 from models.LogData import LogData
 from models.Vessel import Vessel
+
+detector_method = "FSM"
 
 
 class NonVisualSimulation:
@@ -28,7 +29,7 @@ class NonVisualSimulation:
 
     def setup(self):
         Simulation.clear()
-        self.simulation = Simulation()
+        self.simulation = Simulation(detector_method)
         self.simulation.start_simulation()
 
     def iteration(self, tick_count: int):
@@ -38,7 +39,7 @@ class NonVisualSimulation:
             current_tick: GenerateResponse = self.simulation.next_tick()
             print(f"Tick {i}")
             if i % 10 == 0 or self.simulation.selected_vessel is None:
-                Detector.clear()
+                self.simulation.detector.clear()
                 self.simulation.selected_vessel = random.choice(self.simulation.vessels_ordered_by_mmsi)
 
             dark_activity_vessel: Vessel = random.choice(self.simulation.vessels_ordered_by_mmsi)

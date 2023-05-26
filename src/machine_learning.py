@@ -1,6 +1,6 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
+from joblib import dump
+from sklearn.ensemble import RandomForestClassifier, BaggingClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
@@ -20,10 +20,14 @@ class MachineLearning:
         MachineLearning.run_classifier(lambda: MLPClassifier(), 'nn')
         MachineLearning.run_classifier(lambda: DecisionTreeClassifier(), 'dt')  #
         MachineLearning.run_classifier(lambda: DecisionTreeClassifier(criterion='entropy'), 'dte')
-        MachineLearning.run_classifier(lambda: LogisticRegression(), 'lgr')
         MachineLearning.run_classifier(lambda: RandomForestClassifier(), 'rf')  #
         MachineLearning.run_classifier(lambda: SVC(kernel='rbf'), 'svc-rbf')
         MachineLearning.run_classifier(lambda: SVC(kernel='poly'), 'svc-poly')  #
+
+    @staticmethod
+    def export_trained_model():
+        clf = MachineLearning.run_classifier(lambda: BaggingClassifier(estimator=MLPClassifier(), n_estimators=10), 'bagging-nn')
+        dump(clf, 'trained_model.joblib')
 
     @staticmethod
     def read_data():
@@ -42,10 +46,11 @@ class MachineLearning:
     def run_classifier(classifier, name):
         X_train, X_test, y_train, y_test = MachineLearning.read_data()
         c = classifier()
-        c.fit(X_train, y_train)
-        y_pred_en = c.predict(X_test)
-        y_pred_train_en = c.predict(X_train)
+        c.fit(X_train.values, y_train)
+        y_pred_en = c.predict(X_test.values)
+        y_pred_train_en = c.predict(X_train.values)
         MachineLearning.print_metrics(c, X_test, y_train, y_test, y_pred_train_en, y_pred_en, name)
+        return c
 
     @staticmethod
     def print_metrics(classifier, X_test, y_train, y_test, y_pred_train_en, y_pred_en, name):
@@ -68,4 +73,4 @@ class MachineLearning:
         # sns.heatmap(cm, annot=True, linewidths=0.5, linecolor="red", fmt='.0f', ax=ax)
         # plt.savefig(f'0.6-{name}.png')
 
-MachineLearning.test_methods()
+MachineLearning.export_trained_model()

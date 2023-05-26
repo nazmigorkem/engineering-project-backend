@@ -14,7 +14,7 @@ from models.Vessel import Vessel
 class NonVisualSimulation:
 
     def __init__(self):
-        self.field_names = ["distance_from_selected_vessel", "selected_vessel_course", "selected_vessel_distance_per_tick", "course", "distance_per_tick", "ais_range", "dark_activity"]
+        self.field_names = ["distance_from_selected_vessel", "selected_vessel_course", "selected_vessel_heading", "selected_vessel_distance_per_tick", "selected_vessel_distance_to_turn_point", "course", "heading", "distance_per_tick", "distance_to_turn_point", "ais_range", "dark_activity"]
         self.data = []
         self.logs_as_dict: list[dict[str, any]] = []
         self.total_dark_activities = []
@@ -61,9 +61,13 @@ class NonVisualSimulation:
         for x in results:
             self.data.append({"distance_from_selected_vessel": Calculation.calculate_distance(self.simulation.selected_vessel.position, x.position),
                               "selected_vessel_course": self.simulation.selected_vessel.course,
+                              "selected_vessel_heading": self.simulation.selected_vessel.heading,
                               "selected_vessel_distance_per_tick": self.simulation.selected_vessel.distance_per_tick,
+                              "selected_vessel_distance_to_turn_point": self.simulation.selected_vessel.last_distance_to_current_mid_point_end,
                               "course": x.course,
+                              "heading": x.heading,
                               "distance_per_tick": x.distance_per_tick,
+                              "distance_to_turn_point": x.last_distance_to_current_mid_point_end,
                               "ais_range": x.ais_range,
                               "dark_activity": x.dark_activity})
 

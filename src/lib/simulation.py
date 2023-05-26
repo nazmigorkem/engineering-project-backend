@@ -69,8 +69,7 @@ class Simulation(metaclass=Singleton):
             for vessel in route.vessels:
                 index = vessel.current_route_index
                 current_route = route.coordinates[index]
-                current_destination = route.coordinates[
-                    (index + 1) if not vessel.is_going_reverse_route else (index - 1)]
+                current_destination = route.coordinates[(index + 1) if not vessel.is_going_reverse_route else (index - 1)]
                 distance = Calculation.calculate_distance(current_destination, vessel.position)
                 slope = math.degrees(Calculation.calculate_bearing(current_route, current_destination))
 
@@ -86,15 +85,12 @@ class Simulation(metaclass=Singleton):
                         if self.selected_vessel is not None and self.selected_vessel.mmsi == vessel.mmsi:
                             self.selected_vessel = None
                         if random.random() < 0.5:
-                            new_vessel = self.generate(route.coordinates[0], route.coordinates[1], 0, 1, route.noise[0],
-                                                       (True, False))[0]
+                            new_vessel = self.generate(route.coordinates[0], route.coordinates[1], 0, 1, route.noise[0], (True, False))[0]
                         else:
-                            new_vessel = \
-                                self.generate(route.coordinates[-2], route.coordinates[-1], len(route.coordinates) - 2,
-                                              1,
-                                              route.noise[-1], (True, True))[0]
+                            new_vessel = self.generate(route.coordinates[-2], route.coordinates[-1], len(route.coordinates) - 2, 1, route.noise[-1], (True, True))[0]
                         route.vessels.append(new_vessel)
                         continue
+
                     next_destination = route.coordinates[
                         (index + 2) if not vessel.is_going_reverse_route else (index - 2)]
                     slope = Calculation.calculate_bearing(current_destination, next_destination)
@@ -105,8 +101,11 @@ class Simulation(metaclass=Singleton):
                     distance = Calculation.calculate_distance(current_destination, vessel.position)
                 vessel.last_distance_to_current_mid_point_end = distance
                 vessel.bearing = vessel.course
-                vessel.heading = vessel.course
                 vessel.position = Calculation.calculate_destination(vessel.distance_per_tick, vessel.bearing, vessel.position)
+
+                if (not vessel.is_going_reverse_route and not len(route.coordinates) == index + 2) or (not vessel.is_going_reverse_route and index - 2 == -1):
+                    next_destination = route.coordinates[(index + 2) if not vessel.is_going_reverse_route else (index - 2)]
+                    vessel.heading = math.degrees(Calculation.calculate_bearing(vessel.position, next_destination))
 
         if self.selected_vessel is not None:
             broadcast_control = self.find_closest_vessels_of_selected_vessel()

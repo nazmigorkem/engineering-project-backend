@@ -50,5 +50,4 @@ class Detector(metaclass=Singleton):
                                 other_vessel_position=new_estimated_position, other_vessel_ais_range=vessel.ais_range):
                 self.calculated_as_in_range.append(vessel)
             else:
-                # not used at the moment, added for future features
                 self.calculated_as_not_in_range.append(vessel)

@@ -32,3 +32,4 @@ class Util:
         for x in array:
             new_array.append(dataclasses.replace(x))
         return new_array
+    

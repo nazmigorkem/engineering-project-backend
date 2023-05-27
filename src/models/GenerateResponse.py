@@ -9,5 +9,7 @@ from models.Vessel import Vessel
 class GenerateResponse:
     generated_vessels: list[Route]
     range_check: RangeCheckResponse
-    total_dark_activity_vessels: list[Vessel]
-    confusion_matrix: tuple[int, int, int, int]
+    total_dark_activity_vessels_fsm: list[Vessel]
+    total_dark_activity_vessels_ml: list[Vessel]
+    confusion_matrix_fsm: tuple[int, int, int, int]
+    confusion_matrix_ml: tuple[int, int, int, int]

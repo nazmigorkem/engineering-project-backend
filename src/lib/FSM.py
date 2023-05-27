@@ -29,17 +29,17 @@ class Detector(metaclass=Singleton):
                 continue
             self.confusion_matrix.append(x.mmsi)
             if x.dark_activity is False:
-                false_positive_count += 1
-            else:
-                true_positive_count += 1
-
-        for x in self.possible_out_of_range:
-            if x.dark_activity is True:
                 false_negative_count += 1
             else:
                 true_negative_count += 1
 
-        return self.possible_dark_activities, self.possible_out_of_range, (true_positive_count, true_negative_count, false_positive_count, false_negative_count)
+        for x in self.possible_out_of_range:
+            if x.dark_activity is True:
+                false_positive_count += 1
+            else:
+                true_positive_count += 1
+
+        return self.possible_dark_activities, self.possible_out_of_range, (true_positive_count, false_positive_count, false_negative_count, true_negative_count)
 
     @staticmethod
     def calculate_possibilities(new_closest_vessels: list[Vessel], calculated_array: list[Vessel], result_array: list[Vessel]):

@@ -4,12 +4,9 @@ import random
 
 from lib.calculation import Calculation
 from lib.simulation import Simulation
-from lib.util import Util
 from models.GenerateResponse import GenerateResponse
 from models.LogData import LogData
 from models.Vessel import Vessel
-
-detector_method = "FSM"
 
 
 class NonVisualSimulation:
@@ -20,17 +17,26 @@ class NonVisualSimulation:
         self.logs_as_dict: list[dict[str, any]] = []
         self.total_dark_activities = []
         self.simulation: Simulation | None = None
+        self.total_confusion_matrix_fsm = (0, 0, 0, 0)
+        self.total_confusion_matrix_ml = (0, 0, 0, 0)
         for i in range(10):
             print(f"\033[35mIteration #{i + 1}\033[0m")
             self.setup()
             self.iteration(1000)
-            print(f"Done. \033[31;1m{len(self.simulation.total_dark_activity_for_whole_simulation)}\033[0;22m total dark activities found. f1 results: {self.simulation.confusion_matrix}")
-        if detector_method == "FSM":
-            self.export_results()
+            print(f"Done.")
+            print(f"\033[31;1m{len(self.simulation.total_dark_activity_for_whole_simulation_fsm)}\033[0;22m total dark activities found by FSM")
+            print(f"FSM confusion matrix: {self.simulation.confusion_matrix_fsm}")
+            print(f"\033[31;1m{len(self.simulation.total_dark_activity_for_whole_simulation_ml)}\033[0;22m total dark activities found by ML")
+            print(f"ML Confusion matrix: {self.simulation.confusion_matrix_ml}")
+            self.total_confusion_matrix_fsm = tuple(map(sum, zip(self.total_confusion_matrix_fsm, self.simulation.confusion_matrix_fsm)))
+            self.total_confusion_matrix_ml = tuple(map(sum, zip(self.total_confusion_matrix_ml, self.simulation.confusion_matrix_ml)))
+        print(f"FSM Confusion matrix {self.total_confusion_matrix_fsm}")
+        print(f"ML Confusion matrix {self.total_confusion_matrix_ml}")
+        # self.export_results()
 
     def setup(self):
         Simulation.clear()
-        self.simulation = Simulation(detector_method)
+        self.simulation = Simulation()
         self.simulation.start_simulation()
 
     def iteration(self, tick_count: int):
@@ -40,7 +46,8 @@ class NonVisualSimulation:
             current_tick: GenerateResponse = self.simulation.next_tick()
             print(f"Tick {i}")
             if i % 10 == 0 or self.simulation.selected_vessel is None:
-                self.simulation.detector.clear()
+                self.simulation.fsm_detector.clear()
+                self.simulation.ml_detector.clear()
                 self.simulation.selected_vessel = random.choice(self.simulation.vessels_ordered_by_mmsi)
 
             dark_activity_vessel: Vessel = random.choice(self.simulation.vessels_ordered_by_mmsi)
@@ -48,13 +55,9 @@ class NonVisualSimulation:
                 dark_activity_vessel.dark_activity = True
 
             if i != 0:
-                previous_tick_dark_activity_vessels = []
-                previous_out_of_range_vessels = []
-                self.compare_with_previous_tick(current_tick.range_check.detected_dark_activity_vessels, previous_tick_closest_vessels, previous_tick_dark_activity_vessels)
-                self.compare_with_previous_tick(current_tick.range_check.detected_out_of_range_vessels, previous_tick_closest_vessels, previous_out_of_range_vessels)
-                self.iterate_results(previous_tick_dark_activity_vessels)
-                self.iterate_results(previous_out_of_range_vessels)
-                previous_tick_closest_vessels = Util.deep_copy(current_tick.range_check.closest_vessels)
+                self.iterate_results(current_tick.range_check.detected_dark_activity_vessels_by_fsm)
+                self.iterate_results(current_tick.range_check.detected_out_of_range_vessels_by_fsm)
+                # previous_tick_closest_vessels = Util.deep_copy(current_tick.range_check.closest_vessels)
                 self.logs_as_dict.append(
                     LogData(i, dataclasses.replace(self.simulation.selected_vessel), current_tick.range_check).__dict__)
             print("\033[1A", end="")

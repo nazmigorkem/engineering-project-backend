@@ -20,7 +20,7 @@ class Util:
                 else:
                     dark_activity_vessels.append(x)
 
-        return RangeCheckResponse(normal_captured_vessels, [], [], dark_activity_vessels)
+        return RangeCheckResponse(normal_captured_vessels, [], [], [], [], dark_activity_vessels)
 
     @staticmethod
     def check_range(selected_vessel_position: LatLongExpression, other_vessel_position: LatLongExpression, other_vessel_ais_range: float | int) -> bool:

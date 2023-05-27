@@ -20,7 +20,7 @@ class Simulation(metaclass=Singleton):
     def __init__(self, detector_method: str):
         self.types: list[VesselType] = []
         self.routes: list[Route] = []
-        self.f1_results = (0, 0, 0, 0)
+        self.confusion_matrix = (0, 0, 0, 0)
         self.detector = FSMDetector if detector_method == "FSM" else MLDetector
 
         with open('./data/vessel_types.json') as f:
@@ -67,7 +67,7 @@ class Simulation(metaclass=Singleton):
         broadcast_control = RangeCheckResponse([], [], [], [])
         detected_dark_activities = []
         detected_out_of_range = []
-        f1_results = (0, 0, 0, 0)
+        confusion_matrix = (0, 0, 0, 0)
 
         for route in self.routes:
             for vessel in route.vessels:
@@ -122,7 +122,7 @@ class Simulation(metaclass=Singleton):
 
         if self.selected_vessel is not None:
             broadcast_control = self.find_closest_vessels_of_selected_vessel()
-            detected_dark_activities, detected_out_of_range, f1_results = self.detector(
+            detected_dark_activities, detected_out_of_range, confusion_matrix = self.detector(
                 closest_vessels=broadcast_control.closest_vessels,
                 selected_vessel=self.selected_vessel).next_state(
                 broadcast_control.closest_vessels)
@@ -135,14 +135,14 @@ class Simulation(metaclass=Singleton):
                         break
                 if not is_found:
                     self.total_dark_activity_for_whole_simulation.append(dataclasses.replace(x))
-                    break
-        self.f1_results = tuple(map(sum, zip(self.f1_results, f1_results)))
+
+        self.confusion_matrix = tuple(map(sum, zip(self.confusion_matrix, confusion_matrix)))
         return GenerateResponse(self.routes,
                                 RangeCheckResponse(closest_vessels=broadcast_control.closest_vessels,
                                                    detected_dark_activity_vessels=detected_dark_activities,
                                                    detected_out_of_range_vessels=detected_out_of_range,
                                                    all_dark_activity_vessels=broadcast_control.all_dark_activity_vessels),
-                                total_dark_activity_vessels=self.total_dark_activity_for_whole_simulation, f1_results=f1_results)
+                                total_dark_activity_vessels=self.total_dark_activity_for_whole_simulation, confusion_matrix=confusion_matrix)
 
     def start_simulation(self) -> GenerateResponse:
         for (ith_route, route) in enumerate(self.routes):

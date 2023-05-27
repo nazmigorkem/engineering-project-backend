@@ -14,6 +14,7 @@ class Detector(metaclass=Singleton):
         self.possible_out_of_range: list[Vessel] = []
         self.selected_vessel = selected_vessel
         self.estimate_positions(closest_vessels)
+        self.confusion_matrix = []
 
     def next_state(self, new_closest_vessels: list[Vessel]) -> tuple[list[Vessel], list[Vessel], tuple[int, int, int, int]]:
         false_positive_count = 0
@@ -24,10 +25,14 @@ class Detector(metaclass=Singleton):
         self.calculate_possibilities(new_closest_vessels, self.calculated_as_not_in_range, self.possible_out_of_range)
         self.estimate_positions(new_closest_vessels)
         for x in self.possible_dark_activities:
+            if x.mmsi in self.confusion_matrix:
+                continue
+            self.confusion_matrix.append(x.mmsi)
             if x.dark_activity is False:
                 false_positive_count += 1
             else:
                 true_positive_count += 1
+
         for x in self.possible_out_of_range:
             if x.dark_activity is True:
                 false_negative_count += 1
@@ -46,8 +51,8 @@ class Detector(metaclass=Singleton):
                     break
 
             if not is_found:
-                for past_out_of_range in result_array:
-                    if past_out_of_range.mmsi == calculated.mmsi:
+                for result in result_array:
+                    if result.mmsi == calculated.mmsi:
                         is_found = True
                         break
                 if not is_found and not calculated.is_removed:

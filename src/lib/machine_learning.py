@@ -17,6 +17,7 @@ class Detector(metaclass=Singleton):
         self.previous_closest_vessels = Util.deep_copy(closest_vessels)
         self.selected_vessel = selected_vessel
         self.selected_vessel_previous_tick = dataclasses.replace(selected_vessel)
+        self.confusion_matrix = []
         self.clf = load('trained_model.joblib')
 
     def next_state(self, new_closest_vessels: list[Vessel]) -> tuple[list[Vessel], list[Vessel], tuple[int, int, int, int]]:
@@ -54,6 +55,9 @@ class Detector(metaclass=Singleton):
         self.selected_vessel_previous_tick = dataclasses.replace(self.selected_vessel)
         self.previous_closest_vessels = new_closest_vessels
         for x in self.possible_dark_activities:
+            if x.mmsi in self.confusion_matrix:
+                continue
+            self.confusion_matrix.append(x.mmsi)
             if not x.dark_activity:
                 false_positive_count += 1
             else:

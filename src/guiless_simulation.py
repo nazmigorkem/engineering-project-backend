@@ -24,7 +24,7 @@ class NonVisualSimulation:
             print(f"\033[35mIteration #{i + 1}\033[0m")
             self.setup()
             self.iteration(1000)
-            print(f"Done. \033[31;1m{len(self.simulation.total_dark_activity_for_whole_simulation)}\033[0;22m total dark activities found. f1 results: {self.simulation.f1_results}")
+            print(f"Done. \033[31;1m{len(self.simulation.total_dark_activity_for_whole_simulation)}\033[0;22m total dark activities found. f1 results: {self.simulation.confusion_matrix}")
         if detector_method == "FSM":
             self.export_results()
 

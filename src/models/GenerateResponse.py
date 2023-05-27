@@ -10,4 +10,4 @@ class GenerateResponse:
     generated_vessels: list[Route]
     range_check: RangeCheckResponse
     total_dark_activity_vessels: list[Vessel]
-    f1_results: tuple[int, int, int, int]
+    confusion_matrix: tuple[int, int, int, int]

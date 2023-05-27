@@ -1,6 +1,6 @@
 import pandas as pd
 from joblib import dump
-from sklearn.ensemble import RandomForestClassifier, BaggingClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
@@ -26,7 +26,7 @@ class MachineLearning:
 
     @staticmethod
     def export_trained_model():
-        clf = MachineLearning.run_classifier(lambda: BaggingClassifier(estimator=MLPClassifier(), n_estimators=10), 'bagging-nn')
+        clf = MachineLearning.run_classifier(lambda: RandomForestClassifier(), 'rf')  #
         dump(clf, 'trained_model.joblib')
 
     @staticmethod

@@ -97,6 +97,8 @@ class Simulation(metaclass=Singleton):
 
                         if self.selected_vessel is not None and self.selected_vessel.mmsi == vessel.mmsi:
                             self.selected_vessel = None
+                            self.fsm_detector.clear()
+                            self.ml_detector.clear()
                         if random.random() < 0.5:
                             new_vessel = self.generate(route.coordinates[0], route.coordinates[1], 0, 1, route.noise[0],
                                                        (True, False))[0]

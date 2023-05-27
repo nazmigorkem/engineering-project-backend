@@ -32,7 +32,7 @@ class NonVisualSimulation:
             self.total_confusion_matrix_ml = tuple(map(sum, zip(self.total_confusion_matrix_ml, self.simulation.confusion_matrix_ml)))
         print(f"FSM Confusion matrix {self.total_confusion_matrix_fsm}")
         print(f"ML Confusion matrix {self.total_confusion_matrix_ml}")
-        # self.export_results()
+        self.export_results()
 
     def setup(self):
         Simulation.clear()

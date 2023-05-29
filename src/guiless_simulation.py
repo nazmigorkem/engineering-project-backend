@@ -30,9 +30,9 @@ class NonVisualSimulation:
             print(f"ML Confusion matrix: {self.simulation.confusion_matrix_ml}")
             self.total_confusion_matrix_fsm = tuple(map(sum, zip(self.total_confusion_matrix_fsm, self.simulation.confusion_matrix_fsm)))
             self.total_confusion_matrix_ml = tuple(map(sum, zip(self.total_confusion_matrix_ml, self.simulation.confusion_matrix_ml)))
-        print(f"FSM Confusion matrix {self.total_confusion_matrix_fsm}")
-        print(f"ML Confusion matrix {self.total_confusion_matrix_ml}")
-        # self.export_results()
+        print(f"FSM Confusion matrix {self.total_confusion_matrix_fsm} Accuracy: {(self.total_confusion_matrix_fsm[0] + self.total_confusion_matrix_fsm[3]) / (self.total_confusion_matrix_fsm[0] + self.total_confusion_matrix_fsm[1] + self.total_confusion_matrix_fsm[2] + self.total_confusion_matrix_fsm[3])}")
+        print(f"ML Confusion matrix {self.total_confusion_matrix_ml}  Accuracy: {(self.total_confusion_matrix_ml[0] + self.total_confusion_matrix_ml[3]) / (self.total_confusion_matrix_ml[0] + self.total_confusion_matrix_ml[1] + self.total_confusion_matrix_ml[2] + self.total_confusion_matrix_ml[3])}")
+        self.export_results()
 
     def setup(self):
         Simulation.clear()
@@ -55,7 +55,7 @@ class NonVisualSimulation:
                 dark_activity_vessel.dark_activity = True
 
             if i != 0:
-                self.iterate_results(current_tick.range_check.detected_dark_activity_vessels_by_fsm)
+                self.iterate_results(current_tick.range_check.current_tick_detected_dark_activity_vessels_by_fsm)
                 self.iterate_results(current_tick.range_check.detected_out_of_range_vessels_by_fsm)
                 # previous_tick_closest_vessels = Util.deep_copy(current_tick.range_check.closest_vessels)
                 self.logs_as_dict.append(

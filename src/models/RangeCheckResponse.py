@@ -6,6 +6,8 @@ from models.Vessel import Vessel
 @dataclass
 class RangeCheckResponse:
     closest_vessels: list[Vessel]
+    current_tick_detected_dark_activity_vessels_by_fsm: list[Vessel]
+    current_tick_detected_dark_activity_vessels_by_ml: list[Vessel]
     detected_dark_activity_vessels_by_fsm: list[Vessel]
     detected_out_of_range_vessels_by_fsm: list[Vessel]
     detected_dark_activity_vessels_by_ml: list[Vessel]

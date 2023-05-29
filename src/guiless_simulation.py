@@ -32,7 +32,7 @@ class NonVisualSimulation:
             self.total_confusion_matrix_ml = tuple(map(sum, zip(self.total_confusion_matrix_ml, self.simulation.confusion_matrix_ml)))
         print(f"FSM Confusion matrix {self.total_confusion_matrix_fsm}")
         print(f"ML Confusion matrix {self.total_confusion_matrix_ml}")
-        self.export_results()
+        # self.export_results()
 
     def setup(self):
         Simulation.clear()
@@ -60,7 +60,7 @@ class NonVisualSimulation:
                 # previous_tick_closest_vessels = Util.deep_copy(current_tick.range_check.closest_vessels)
                 self.logs_as_dict.append(
                     LogData(i, dataclasses.replace(self.simulation.selected_vessel), current_tick.range_check).__dict__)
-            print("\033[1A", end="")
+            print("\033[1A\033[0K", end="")
 
     def iterate_results(self, results: list[Vessel]):
         for x in results:

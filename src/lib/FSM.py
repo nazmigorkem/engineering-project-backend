@@ -10,36 +10,24 @@ class Detector(metaclass=Singleton):
     def __init__(self, closest_vessels: list[Vessel], selected_vessel: Vessel):
         self.calculated_as_in_range: list[Vessel] = []
         self.calculated_as_not_in_range: list[Vessel] = []
-        self.possible_dark_activities: list[Vessel] = []
-        self.possible_out_of_range: list[Vessel] = []
+        self.all_detected_dark_activities: list[Vessel] = []
         self.selected_vessel = selected_vessel
         self.estimate_positions(closest_vessels)
         self.confusion_matrix_negative = []
         self.confusion_matrix_positive = []
 
-    def next_state(self, new_closest_vessels: list[Vessel]) -> tuple[list[Vessel], list[Vessel], tuple[int, int, int, int]]:
-        self.possible_dark_activities: list[Vessel] = []
-        self.possible_out_of_range: list[Vessel] = []
-        false_positive_count = 0
-        true_positive_count = 0
-        false_negative_count = 0
-        true_negative_count = 0
-        self.calculate_possibilities(new_closest_vessels, self.calculated_as_in_range, self.possible_dark_activities)
-        self.calculate_possibilities(new_closest_vessels, self.calculated_as_not_in_range, self.possible_out_of_range)
+    def next_state(self, new_closest_vessels: list[Vessel]) -> tuple[list[Vessel], list[Vessel], list[Vessel], tuple[int, int, int, int]]:
+        possible_dark_activities: list[Vessel] = []
+        possible_out_of_range: list[Vessel] = []
+
+        self.calculate_possibilities(new_closest_vessels, self.calculated_as_in_range, possible_dark_activities)
+        self.calculate_possibilities(new_closest_vessels, self.calculated_as_not_in_range, possible_out_of_range)
         self.estimate_positions(new_closest_vessels)
-        for x in self.possible_dark_activities:
-            if x.dark_activity is False:
-                false_negative_count += 1
-            else:
-                true_negative_count += 1
 
-        for x in self.possible_out_of_range:
-            if x.dark_activity is True:
-                false_positive_count += 1
-            else:
-                true_positive_count += 1
+        for x in possible_dark_activities:
+            self.all_detected_dark_activities.append(dataclasses.replace(x))
 
-        return self.possible_dark_activities, self.possible_out_of_range, (true_positive_count, false_positive_count, false_negative_count, true_negative_count)
+        return possible_dark_activities, possible_out_of_range, self.all_detected_dark_activities, Util.calculate_confusion_matrix(possible_dark_activities, possible_out_of_range)
 
     @staticmethod
     def calculate_possibilities(new_closest_vessels: list[Vessel], calculated_array: list[Vessel], result_array: list[Vessel]):

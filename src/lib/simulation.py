@@ -68,9 +68,9 @@ class Simulation(metaclass=Singleton):
 
     def next_tick(self) -> GenerateResponse:
         broadcast_control = RangeCheckResponse([], [], [], [], [], [])
-        detected_dark_activities_by_fsm = []
+        all_detected_dark_activities_by_fsm = []
         detected_out_of_range_by_fsm = []
-        detected_dark_activities_by_ml = []
+        all_detected_dark_activities_by_ml = []
         detected_out_of_range_by_ml = []
         confusion_matrix_fsm = (0, 0, 0, 0)
         confusion_matrix_ml = (0, 0, 0, 0)
@@ -131,38 +131,26 @@ class Simulation(metaclass=Singleton):
 
         if self.selected_vessel is not None:
             broadcast_control = self.find_closest_vessels_of_selected_vessel()
-            detected_dark_activities_by_fsm, detected_out_of_range_by_fsm, confusion_matrix_fsm = self.fsm_detector(
+            current_tick_detected_dark_activities_by_fsm, detected_out_of_range_by_fsm, all_detected_dark_activities_by_fsm, confusion_matrix_fsm = self.fsm_detector(
                 closest_vessels=broadcast_control.closest_vessels,
                 selected_vessel=self.selected_vessel).next_state(broadcast_control.closest_vessels)
-            detected_dark_activities_by_ml, detected_out_of_range_by_ml, confusion_matrix_ml = self.ml_detector(
+            current_tick_detected_dark_activities_by_ml, detected_out_of_range_by_ml, all_detected_dark_activities_by_ml, confusion_matrix_ml = self.ml_detector(
                 closest_vessels=broadcast_control.closest_vessels,
                 selected_vessel=self.selected_vessel).next_state(broadcast_control.closest_vessels)
 
-            for x in detected_dark_activities_by_fsm:
-                is_found = False
-                for y in self.total_dark_activity_for_whole_simulation_fsm:
-                    if x.mmsi == y.mmsi:
-                        is_found = True
-                        break
-                if not is_found:
-                    self.total_dark_activity_for_whole_simulation_fsm.append(dataclasses.replace(x))
+            for x in current_tick_detected_dark_activities_by_fsm:
+                self.total_dark_activity_for_whole_simulation_fsm.append(dataclasses.replace(x))
 
-            for x in detected_dark_activities_by_ml:
-                is_found = False
-                for y in self.total_dark_activity_for_whole_simulation_ml:
-                    if x.mmsi == y.mmsi:
-                        is_found = True
-                        break
-                if not is_found:
-                    self.total_dark_activity_for_whole_simulation_ml.append(dataclasses.replace(x))
+            for x in current_tick_detected_dark_activities_by_ml:
+                self.total_dark_activity_for_whole_simulation_ml.append(dataclasses.replace(x))
 
         self.confusion_matrix_fsm = tuple(map(sum, zip(self.confusion_matrix_fsm, confusion_matrix_fsm)))
         self.confusion_matrix_ml = tuple(map(sum, zip(self.confusion_matrix_ml, confusion_matrix_ml)))
         return GenerateResponse(self.routes,
                                 RangeCheckResponse(closest_vessels=broadcast_control.closest_vessels,
-                                                   detected_dark_activity_vessels_by_fsm=detected_dark_activities_by_fsm,
+                                                   detected_dark_activity_vessels_by_fsm=all_detected_dark_activities_by_fsm,
                                                    detected_out_of_range_vessels_by_fsm=detected_out_of_range_by_fsm,
-                                                   detected_dark_activity_vessels_by_ml=detected_dark_activities_by_ml,
+                                                   detected_dark_activity_vessels_by_ml=all_detected_dark_activities_by_ml,
                                                    detected_out_of_range_vessels_by_ml=detected_out_of_range_by_ml,
                                                    all_dark_activity_vessels=broadcast_control.all_dark_activity_vessels),
                                 total_dark_activity_vessels_fsm=self.total_dark_activity_for_whole_simulation_fsm,

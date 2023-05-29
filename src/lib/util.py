@@ -32,4 +32,35 @@ class Util:
         for x in array:
             new_array.append(dataclasses.replace(x))
         return new_array
-    
+
+    @staticmethod
+    def calculate_confusion_matrix(possible_dark_activities, possible_out_of_range):
+        false_negative_count = 0
+        true_negative_count = 0
+        false_positive_count = 0
+        true_positive_count = 0
+        for x in possible_dark_activities:
+            if x.dark_activity is False:
+                false_negative_count += 1
+            else:
+                true_negative_count += 1
+
+        for x in possible_out_of_range:
+            if x.dark_activity is True:
+                false_positive_count += 1
+            else:
+                true_positive_count += 1
+
+        return true_positive_count, false_positive_count, false_negative_count, true_negative_count
+
+    @staticmethod
+    def append_if_does_not_exist(results, target_array):
+        for x in results:
+            is_found = False
+            for y in target_array:
+                if x.mmsi == y.mmsi:
+                    is_found = True
+                    break
+            if not is_found:
+                target_array.append(dataclasses.replace(x))
+                
